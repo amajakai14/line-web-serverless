@@ -12,12 +12,9 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt: async ({ token }) => {
-      console.log("token", token);
       return token;
     },
     session: async ({ session, token }) => {
-      console.log("callback session", session);
-      console.log("callback token", token);
       if (session.user && token.sub) {
         session.user.id = token.sub;
       }
@@ -43,8 +40,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        console.log("credentials", credentials);
-        console.log("request", req);
         const user = await prisma.user.findUnique({
           where: { email: credentials?.username },
         });
