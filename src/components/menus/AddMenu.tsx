@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import Pagination from "react-paginate";
-import { CreateMenuInput, MenuList, menuType } from "../../schema/menu.schema";
+import type { CreateMenuInput, MenuList } from "../../schema/menu.schema";
+import { menuType } from "../../schema/menu.schema";
 import { api } from "../../utils/api";
 import { isValidPrice } from "../../utils/input-validation";
 
@@ -32,6 +33,10 @@ const AddMenu = () => {
       return;
     }
     const { status, message, result } = await mutation.mutateAsync(data);
+    if (status !== 201) {
+      setErrorMessage(message);
+      return;
+    }
     setMenus(result);
     console.log("api sending result", result);
   };
