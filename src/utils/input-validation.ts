@@ -5,6 +5,10 @@ export const isValidEmail = (text: string) => {
 };
 
 export const isValidPassword = (text: string) => {
-  const regex = /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{8,})\S$/;
+  const regex = /^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?\d).{8,})\S$/;
   return regex.test(text);
+};
+
+export const isValidPrice = (value: number) => {
+  return !Number.isNaN(value) && value >= 0 && value <= 20000;
 };

@@ -48,14 +48,18 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String         @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?        @unique
     password      String?
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    tables        Table[]
+    menus         Menu[]
+    courses       Course[]
+    CourseOnMenu  CourseOnMenu[]
 }
 
 model VerificationToken {
@@ -64,4 +68,74 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Table {
+    id          Int     @id @default(autoincrement())
+    table_name  String
+    is_occupied Boolean
+
+    user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id String
+}
+
+model Menu {
+    id             Int            @id @default(autoincrement())
+    menu_name      String
+    menu_type      String
+    price          Int            @default(0)
+    available      Boolean        @default(true)
+    created_at     DateTime?      @default(now())
+    updated_at     DateTime?
+    user           User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id        String
+    course_on_menu CourseOnMenu[]
+}
+
+model CourseOnMenu {
+    course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
+    course_id Int
+    menu      Menu   @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+    menu_id   Int
+    user      User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id   String
+
+    @@id([course_id, menu_id])
+}
+
+model Course {
+    id               Int            @id @default(autoincrement())
+    course_name      String
+    course_timelimit Int?           @default(90)
+    course_priority  Int?
+    created_at       DateTime?      @default(now())
+    updated_at       DateTime?
+    user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id          String
+    course_on_menu   CourseOnMenu[]
+}
+
+model Channel {
+    id         String    @id @unique
+    table_id   Int
+    user_id    Int
+    course_id  Int
+    status     String
+    time_start DateTime? @default(now())
+    time_end   DateTime?
+    orders     Order[]
+
+    @@unique([user_id, table_id])
+}
+
+model Order {
+    id           Int       @id @default(autoincrement())
+    menu_id      String
+    order_amount Int
+    total_price  Int
+    process_type String
+    created_at   DateTime? @default(now())
+    updated_at   DateTime?
+    channels     Channel   @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+    channel_id   String
 }
