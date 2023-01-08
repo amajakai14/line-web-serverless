@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const menuType = ["MAIN", "DRINK", "DESSERT", "APPETIZER"] as const;
+export const menuType = ["APPETIZER", "MAIN", "DESSERT", "DRINK"] as const;
 
 export const createMenuSchema = z.object({
   menu_name: z.string(),
@@ -23,6 +23,7 @@ export type MenuList = z.TypeOf<typeof menuListSchema>;
 export const menuMatchSchema = menuListSchema.pick({
   id: true,
   menu_name: true,
+  menu_type: true,
 });
 
 export type MenuMatch = z.TypeOf<typeof menuMatchSchema>;

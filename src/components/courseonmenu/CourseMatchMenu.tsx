@@ -57,7 +57,8 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
       <table>
         <thead>
           <tr className="border-2 border-black">
-            <th></th>
+            <th className="border-2 border-black"></th>
+            <th className="border-2 border-black"></th>
             {courses &&
               courses.map((course) => (
                 <th key={course.id} className="border-2 border-black px-2">
@@ -71,6 +72,7 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
             menus.map((menu) => (
               <tr key={menu.id}>
                 <td className="border-2 border-black px-2">{menu.menu_name}</td>
+                <td className="border-2 border-black px-2">{menu.menu_type}</td>
                 {courses &&
                   courses.map((course) => {
                     const registered =

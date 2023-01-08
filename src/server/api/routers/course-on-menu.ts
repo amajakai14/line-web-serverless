@@ -5,6 +5,7 @@ import {
   courseOnMenuSchema,
   coursesOnMenusSchema,
   menuMatchSchema,
+  menuType,
 } from "../../../schema/menu.schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -26,6 +27,11 @@ export const courseOnMenuRouter = createTRPCRouter({
 
     const menus = await ctx.prisma.menu.findMany({ where: { user_id: id } });
     const transformMenus = menus.map((menu) => menuMatchSchema.parse(menu));
+    const sortedMenus = transformMenus.sort((a, b) => {
+      const aIndex = menuType.indexOf(a.menu_type);
+      const bIndex = menuType.indexOf(b.menu_type);
+      return aIndex - bIndex;
+    });
 
     const courseOnMenus = await ctx.prisma.courseOnMenu.findMany({
       where: { user_id: id },
@@ -35,7 +41,7 @@ export const courseOnMenuRouter = createTRPCRouter({
     );
     const result: TCourseOnMenu = {
       courses: transformCourses,
-      menus: transformMenus,
+      menus: sortedMenus,
       course_on_menu: transformCourseOnMenu,
     };
     return {
