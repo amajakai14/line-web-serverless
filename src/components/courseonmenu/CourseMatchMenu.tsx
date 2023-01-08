@@ -47,6 +47,9 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
   }
   return (
     <>
+      {errorMessage && (
+        <p className="text-center text-red-600">{errorMessage}</p>
+      )}
       <table>
         <thead>
           <tr>
