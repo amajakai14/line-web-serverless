@@ -40,7 +40,7 @@ const AddCourse = () => {
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>
           )}
-          <label>Menu name</label>
+          <label>Course name</label>
           <input
             className="rounded border py-1 px-4"
             type="text"
@@ -53,7 +53,7 @@ const AddCourse = () => {
           <input
             className="rounded border py-1 px-4"
             type="text"
-            defaultValue={0}
+            defaultValue={90}
             {...register("course_timelimit", {
               required: true,
               valueAsNumber: true,

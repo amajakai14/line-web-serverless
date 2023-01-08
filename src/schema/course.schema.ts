@@ -14,3 +14,10 @@ export const courseListSchema = z.object({
 });
 
 export type CourseList = z.TypeOf<typeof courseListSchema>;
+
+export const courseMatchSchema = courseListSchema.pick({
+  id: true,
+  course_name: true,
+});
+
+export type CourseMatch = z.TypeOf<typeof courseMatchSchema>;

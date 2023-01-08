@@ -7,6 +7,19 @@ import { isValidPrice } from "../../../utils/input-validation";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const courseRouter = createTRPCRouter({
+  get: protectedProcedure.query(async ({ ctx }) => {
+    const { id } = ctx.session.user;
+    const courses = await ctx.prisma.course.findMany({
+      where: { user_id: id },
+    });
+    const transform = courses.map((course) => courseListSchema.parse(course));
+    return {
+      status: 200,
+      message: "menu get Successfully",
+      result: transform,
+    };
+  }),
+
   register: protectedProcedure
     .input(createCourseSchema)
     .mutation(async ({ ctx, input }) => {
