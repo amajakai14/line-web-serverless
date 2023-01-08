@@ -1,10 +1,9 @@
 import type { CourseMatch } from "../../../schema/course.schema";
 import { courseMatchSchema } from "../../../schema/course.schema";
+import type { CourseOnMenuList, MenuMatch } from "../../../schema/menu.schema";
 import {
-  CourseOnMenuList,
   courseOnMenuSchema,
   coursesOnMenusSchema,
-  MenuMatch,
   menuMatchSchema,
 } from "../../../schema/menu.schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -13,12 +12,6 @@ export type TCourseOnMenu = {
   courses: CourseMatch[];
   menus: MenuMatch[];
   course_on_menu: CourseOnMenuList[];
-};
-
-type TInsertCOM = {
-  menu_id: number;
-  course_id: number;
-  user_id: string;
 };
 
 export const courseOnMenuRouter = createTRPCRouter({

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { CourseMatch } from "../../schema/course.schema";
-import { CourseOnMenuList, MenuMatch } from "../../schema/menu.schema";
-import { TCourseOnMenu } from "../../server/api/routers/course-on-menu";
+import type { CourseOnMenuList } from "../../schema/menu.schema";
+import type { TCourseOnMenu } from "../../server/api/routers/course-on-menu";
 import { api } from "../../utils/api";
 
 const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
@@ -9,10 +8,8 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
     undefined
   );
 
-  const [courses, setCourses] = useState<CourseMatch[] | undefined>(
-    data.courses
-  );
-  const [menus, setMenus] = useState<MenuMatch[] | undefined>(data.menus);
+  const courses = data.courses;
+  const menus = data.menus;
   const [courseOnMenus, setCourseOnMenu] = useState<
     CourseOnMenuList[] | undefined
   >(data.course_on_menu);
