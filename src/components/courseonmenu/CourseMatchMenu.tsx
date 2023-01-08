@@ -16,7 +16,7 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
 
   const mutation = api.courseOnMenu.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
-    onSuccess: (data) => console.log(data),
+    onSuccess: () => setErrorMessage("saved"),
   });
 
   function handleMatcher() {
@@ -24,6 +24,7 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
   }
 
   function onToggle(menu_id: number, course_id: number) {
+    setErrorMessage(undefined);
     if (courseOnMenus == null) {
       setCourseOnMenu([{ menu_id, course_id }]);
       return;
@@ -45,6 +46,9 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
       setCourseOnMenu(x);
     }
   }
+  if (menus.length === 0 || courses.length === 0) {
+    return <p>Please Add some menus and courses before do the matching</p>;
+  }
   return (
     <>
       {errorMessage && (
@@ -52,19 +56,21 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
       )}
       <table>
         <thead>
-          <tr>
+          <tr className="border-2 border-black">
             <th></th>
             {courses &&
               courses.map((course) => (
-                <th key={course.id}>{course.course_name}</th>
+                <th key={course.id} className="border-2 border-black px-2">
+                  {course.course_name}
+                </th>
               ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="border-2 border-black">
           {menus &&
             menus.map((menu) => (
               <tr key={menu.id}>
-                <td>{menu.menu_name}</td>
+                <td className="border-2 border-black px-2">{menu.menu_name}</td>
                 {courses &&
                   courses.map((course) => {
                     const registered =
@@ -75,7 +81,10 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
                           courseOnMenu.course_id === course.id
                       );
                     return (
-                      <td key={course.id}>
+                      <td
+                        key={course.id}
+                        className="border-2 border-black px-2"
+                      >
                         <button onClick={() => onToggle(menu.id, course.id)}>
                           {registered ? "✔" : "✖"}
                         </button>
