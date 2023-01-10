@@ -8,9 +8,9 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const courseRouter = createTRPCRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
-    const { id } = ctx.session.user;
+    const { corporation_id } = ctx.session.user;
     const courses = await ctx.prisma.course.findMany({
-      where: { user_id: id },
+      where: { corporation_id },
     });
     const transform = courses.map((course) => courseListSchema.parse(course));
     return {
@@ -24,7 +24,7 @@ export const courseRouter = createTRPCRouter({
     .input(createCourseSchema)
     .mutation(async ({ ctx, input }) => {
       const { course_name, course_timelimit } = input;
-      const { id } = ctx.session.user;
+      const { corporation_id } = ctx.session.user;
       if (!isValidPrice(course_timelimit)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -35,11 +35,11 @@ export const courseRouter = createTRPCRouter({
         data: {
           course_name,
           course_timelimit,
-          user: { connect: { id } },
+          corporation: { connect: { id: corporation_id } },
         },
       });
       const courses = await ctx.prisma.course.findMany({
-        where: { user_id: id },
+        where: { corporation_id },
       });
       if (courses == null) {
         throw new TRPCError({

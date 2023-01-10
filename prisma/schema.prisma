@@ -47,19 +47,28 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Corporation {
+    id           String         @id @default(cuid())
+    name         String?
+    users        User[]
+    tables       Table[]
+    menus        Menu[]
+    courses      Course[]
+    CourseOnMenu CourseOnMenu[]
+}
+
 model User {
-    id            String         @id @default(cuid())
-    name          String?
-    email         String?        @unique
-    password      String?
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    tables        Table[]
-    menus         Menu[]
-    courses       Course[]
-    CourseOnMenu  CourseOnMenu[]
+    id             String      @id @default(cuid())
+    name           String?
+    email          String?     @unique
+    password       String?
+    emailVerified  DateTime?
+    image          String?
+    role           String?
+    accounts       Account[]
+    sessions       Session[]
+    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    corporation_id String
 }
 
 model VerificationToken {
@@ -75,8 +84,8 @@ model Table {
     table_name  String
     is_occupied Boolean
 
-    user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    user_id String
+    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    corporation_id String
 }
 
 model Menu {
@@ -87,18 +96,18 @@ model Menu {
     available      Boolean        @default(true)
     created_at     DateTime?      @default(now())
     updated_at     DateTime?
-    user           User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    user_id        String
+    corporation    Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    corporation_id String
     course_on_menu CourseOnMenu[]
 }
 
 model CourseOnMenu {
-    course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
-    course_id Int
-    menu      Menu   @relation(fields: [menu_id], references: [id], onDelete: Cascade)
-    menu_id   Int
-    user      User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    user_id   String
+    course         Course      @relation(fields: [course_id], references: [id], onDelete: Cascade)
+    course_id      Int
+    menu           Menu        @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+    menu_id        Int
+    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    corporation_id String
 
     @@id([course_id, menu_id])
 }
@@ -110,8 +119,8 @@ model Course {
     course_priority  Int?
     created_at       DateTime?      @default(now())
     updated_at       DateTime?
-    user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-    user_id          String
+    corporation      Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    corporation_id   String
     course_on_menu   CourseOnMenu[]
 }
 

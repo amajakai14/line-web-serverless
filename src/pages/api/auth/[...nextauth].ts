@@ -11,12 +11,18 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt: async ({ token }) => {
+    jwt: async ({ user, token }) => {
+      if (user?.corporation_id) {
+        token.corporation_id = user.corporation_id;
+        token.role = user.role;
+      }
       return token;
     },
     session: async ({ session, token }) => {
-      if (session.user && token.sub) {
+      if (session.user && token.sub && token.role && token.corporation_id) {
         session.user.id = token.sub;
+        session.user.role = token.role;
+        session.user.corporation_id = token.corporation_id;
       }
       return session;
     },

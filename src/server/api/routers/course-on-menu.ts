@@ -17,31 +17,31 @@ export type TCourseOnMenu = {
 
 export const courseOnMenuRouter = createTRPCRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
-    const { id } = ctx.session.user;
+    const { corporation_id } = ctx.session.user;
     const courses = await ctx.prisma.course.findMany({
-      where: { user_id: id },
+      where: { corporation_id },
     });
     const transformCourses = courses.map((course) =>
       courseMatchSchema.parse(course)
     );
 
-    const menus = await ctx.prisma.menu.findMany({ where: { user_id: id } });
+    const menus = await ctx.prisma.menu.findMany({ where: { corporation_id } });
     const transformMenus = menus.map((menu) => menuMatchSchema.parse(menu));
-    const sortedMenus = transformMenus.sort((a, b) => {
-      const aIndex = menuType.indexOf(a.menu_type);
-      const bIndex = menuType.indexOf(b.menu_type);
-      return aIndex - bIndex;
+    transformMenus.sort((left, right) => {
+      const leftIndex = menuType.indexOf(left.menu_type);
+      const rightIndex = menuType.indexOf(right.menu_type);
+      return leftIndex - rightIndex;
     });
 
     const courseOnMenus = await ctx.prisma.courseOnMenu.findMany({
-      where: { user_id: id },
+      where: { corporation_id },
     });
     const transformCourseOnMenu = courseOnMenus.map((val) =>
       courseOnMenuSchema.parse(val)
     );
     const result: TCourseOnMenu = {
       courses: transformCourses,
-      menus: sortedMenus,
+      menus: transformMenus,
       course_on_menu: transformCourseOnMenu,
     };
     return {
@@ -54,17 +54,17 @@ export const courseOnMenuRouter = createTRPCRouter({
   register: protectedProcedure
     .input(coursesOnMenusSchema)
     .mutation(async ({ ctx, input }) => {
-      const user_id = ctx.session.user.id;
+      const corporation_id = ctx.session.user.corporation_id;
       ctx.prisma.$transaction(async (tx) => {
         const deleted = await tx.courseOnMenu.deleteMany({
-          where: { user_id },
+          where: { corporation_id },
         });
         let newCreated = 0;
 
         if (input != null) {
           const createSchema = input.map((props) => ({
             ...props,
-            user_id,
+            corporation_id,
           }));
           const created = await tx.courseOnMenu.createMany({
             data: createSchema,

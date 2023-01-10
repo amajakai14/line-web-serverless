@@ -8,7 +8,7 @@ export const menuRouter = createTRPCRouter({
     .input(createMenuSchema)
     .mutation(async ({ ctx, input }) => {
       const { menu_name, menu_type, price } = input;
-      const { id } = ctx.session.user;
+      const { corporation_id } = ctx.session.user;
       if (!isValidPrice(price)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -20,10 +20,12 @@ export const menuRouter = createTRPCRouter({
           menu_name,
           menu_type,
           price,
-          user: { connect: { id } },
+          corporation: { connect: { id: corporation_id } },
         },
       });
-      const menus = await ctx.prisma.menu.findMany({ where: { user_id: id } });
+      const menus = await ctx.prisma.menu.findMany({
+        where: { corporation_id },
+      });
       if (menus == null) {
         throw new TRPCError({
           code: "NOT_FOUND",

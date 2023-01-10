@@ -38,6 +38,14 @@ CREATE TABLE `Session` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Corporation` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NULL,
@@ -45,6 +53,8 @@ CREATE TABLE `User` (
     `password` VARCHAR(191) NULL,
     `emailVerified` DATETIME(3) NULL,
     `image` VARCHAR(191) NULL,
+    `role` VARCHAR(191) NULL,
+    `corporation_id` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -65,7 +75,7 @@ CREATE TABLE `Table` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `table_name` VARCHAR(191) NOT NULL,
     `is_occupied` BOOLEAN NOT NULL,
-    `user_id` VARCHAR(191) NOT NULL,
+    `corporation_id` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -79,7 +89,7 @@ CREATE TABLE `Menu` (
     `available` BOOLEAN NOT NULL DEFAULT true,
     `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
-    `user_id` VARCHAR(191) NOT NULL,
+    `corporation_id` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -88,7 +98,7 @@ CREATE TABLE `Menu` (
 CREATE TABLE `CourseOnMenu` (
     `course_id` INTEGER NOT NULL,
     `menu_id` INTEGER NOT NULL,
-    `user_id` VARCHAR(191) NOT NULL,
+    `corporation_id` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`course_id`, `menu_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -101,7 +111,7 @@ CREATE TABLE `Course` (
     `course_priority` INTEGER NULL,
     `created_at` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NULL,
-    `user_id` VARCHAR(191) NOT NULL,
+    `corporation_id` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -142,10 +152,13 @@ ALTER TABLE `Account` ADD CONSTRAINT `Account_userId_fkey` FOREIGN KEY (`userId`
 ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Table` ADD CONSTRAINT `Table_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `User` ADD CONSTRAINT `User_corporation_id_fkey` FOREIGN KEY (`corporation_id`) REFERENCES `Corporation`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Menu` ADD CONSTRAINT `Menu_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Table` ADD CONSTRAINT `Table_corporation_id_fkey` FOREIGN KEY (`corporation_id`) REFERENCES `Corporation`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Menu` ADD CONSTRAINT `Menu_corporation_id_fkey` FOREIGN KEY (`corporation_id`) REFERENCES `Corporation`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `CourseOnMenu` ADD CONSTRAINT `CourseOnMenu_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `Course`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -154,10 +167,10 @@ ALTER TABLE `CourseOnMenu` ADD CONSTRAINT `CourseOnMenu_course_id_fkey` FOREIGN 
 ALTER TABLE `CourseOnMenu` ADD CONSTRAINT `CourseOnMenu_menu_id_fkey` FOREIGN KEY (`menu_id`) REFERENCES `Menu`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `CourseOnMenu` ADD CONSTRAINT `CourseOnMenu_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `CourseOnMenu` ADD CONSTRAINT `CourseOnMenu_corporation_id_fkey` FOREIGN KEY (`corporation_id`) REFERENCES `Corporation`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Course` ADD CONSTRAINT `Course_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Course` ADD CONSTRAINT `Course_corporation_id_fkey` FOREIGN KEY (`corporation_id`) REFERENCES `Corporation`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_channel_id_fkey` FOREIGN KEY (`channel_id`) REFERENCES `Channel`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

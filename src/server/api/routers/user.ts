@@ -25,6 +25,8 @@ export const userRouter = createTRPCRouter({
           email,
           password: hash,
           name: email.substring(0, email.indexOf("@")),
+          role: "ADMIN",
+          corporation: { connect: { id: "clcq4gc7y000008l7adv478ub" } },
         },
       });
       return {
