@@ -8,3 +8,9 @@ export const createUserSchema = z.object({
 });
 
 export type CreateUserInput = z.TypeOf<typeof createUserSchema>;
+
+export const createStaffSchema = z.object({
+  email: z.string().email(),
+});
+
+export type CreateStaffInput = z.TypeOf<typeof createUserSchema>;
