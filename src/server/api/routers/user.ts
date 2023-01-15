@@ -5,6 +5,7 @@ import {
 import { generateRandomPassword, hashPassword } from "../../../utils/password";
 
 import { TRPCError } from "@trpc/server";
+import { TStaff } from "../../../pages/admin/staff";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
@@ -42,6 +43,33 @@ export const userRouter = createTRPCRouter({
     return "you can now see this secret message!";
   }),
 
+  getStaff: protectedProcedure.query(async ({ ctx }) => {
+    const { corporation_id } = ctx.session.user;
+    const cached = await ctx.redis.get(corporation_id + "getStaff");
+    if (cached) {
+      const result: TStaff[] = JSON.parse(cached);
+      return {
+        status: 201,
+        result,
+      };
+    }
+    const result = await ctx.prisma.user.findMany({
+      select: { id: true, name: true },
+      where: { role: "STAFF", corporation_id },
+    });
+    if (!result) {
+      return {
+        status: 404,
+        message: "No staff is found",
+      };
+    }
+    ctx.redis.set(corporation_id + "getStaff", JSON.stringify(result));
+    return {
+      status: 201,
+      result,
+    };
+  }),
+
   registerStaff: protectedProcedure
     .input(createStaffSchema)
     .mutation(async ({ ctx, input }) => {
@@ -63,14 +91,15 @@ export const userRouter = createTRPCRouter({
           email,
           password: hash,
           name: email.substring(0, email.indexOf("@")),
-          role: "ADMIN",
+          role: "STAFF",
           corporation: { connect: { id: corporation_id } },
         },
       });
+      await ctx.redis.del(corporation_id + "getStaff");
       return {
         status: 201,
         message: "Staff Account created Successfully",
-        result: password,
+        result: { email, password },
       };
     }),
 });

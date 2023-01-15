@@ -1,10 +1,13 @@
 import { PrismaClient } from "@prisma/client";
+import Redis from "ioredis";
 
 import { env } from "../env/server.mjs";
 
 declare global {
   // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
+  // eslint-disable-next-line no-var
+  var redis: Redis | undefined;
 }
 
 export const prisma =
@@ -16,4 +19,10 @@ export const prisma =
 
 if (env.NODE_ENV !== "production") {
   global.prisma = prisma;
+}
+
+export const redis = global.redis || new Redis(env.REDIS_URL);
+
+if (env.NODE_ENV !== "production") {
+  global.redis = redis;
 }
