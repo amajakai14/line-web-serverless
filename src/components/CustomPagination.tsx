@@ -1,14 +1,18 @@
+import type { Dispatch, SetStateAction } from "react";
 import Pagination from "react-paginate";
 export type TPagination = {
   dataCount: number;
   perPage: number;
-  handlePageChange: (cur: { selected: number }) => void;
+  setPage: Dispatch<SetStateAction<number>>;
 };
 const CustomPagination = (props: TPagination) => {
+  function handlePageChange(page: { selected: number }) {
+    props.setPage(page.selected + 1);
+  }
   return (
     <Pagination
       pageCount={Math.ceil(props.dataCount / props.perPage)}
-      onPageChange={props.handlePageChange}
+      onPageChange={handlePageChange}
       containerClassName="flex flex-row justify-between gap-1"
       activeClassName="active text-2xl"
       breakLabel="..."

@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { isValidEmail } from "../../utils/input-validation";
@@ -10,7 +11,7 @@ const StaffRegisterForm = ({
   setRefetchStaff,
 }: {
   refetchStaff: boolean;
-  setRefetchStaff: any;
+  setRefetchStaff: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [successMessage, setSuccessMessage] = useState<string | undefined>();
@@ -26,7 +27,6 @@ const StaffRegisterForm = ({
           res.result.password
       );
       setRefetchStaff(!refetchStaff);
-      return;
     },
   });
 

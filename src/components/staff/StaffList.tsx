@@ -6,9 +6,6 @@ const StaffList = ({ staffList }: { staffList: TStaff[] | undefined }) => {
   const perPage = 10;
   const [page, setPage] = useState(1);
 
-  function handlePageChange(page: { selected: number }) {
-    setPage(page.selected + 1);
-  }
   if (!staffList) return <div></div>;
   const start = (page - 1) * perPage;
   const end = start + perPage;
@@ -37,7 +34,7 @@ const StaffList = ({ staffList }: { staffList: TStaff[] | undefined }) => {
       <CustomPagination
         perPage={perPage}
         dataCount={staffList.length}
-        handlePageChange={handlePageChange}
+        setPage={setPage}
       />
     </div>
   );

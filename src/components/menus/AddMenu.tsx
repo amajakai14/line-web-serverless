@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import Pagination from "react-paginate";
@@ -10,10 +11,6 @@ const AddMenu = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [menus, setMenus] = useState<MenuList[] | undefined>();
   const [page, setPage] = useState(1);
-
-  function handlePageChange(page: { selected: number }) {
-    setPage(page.selected + 1);
-  }
 
   const mutation = api.menu.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
@@ -78,13 +75,7 @@ const AddMenu = () => {
           <input type="submit" className="rounded border py-1 px-4" />
         </form>
       </div>
-      {menus && (
-        <MenuTable
-          page={page}
-          menus={menus}
-          handlePageChange={handlePageChange}
-        />
-      )}
+      {menus && <MenuTable page={page} menus={menus} setPage={setPage} />}
     </>
   );
 };
@@ -94,12 +85,15 @@ export default AddMenu;
 const MenuTable = ({
   page,
   menus,
-  handlePageChange,
+  setPage,
 }: {
   page: number;
   menus: MenuList[];
-  handlePageChange: (page: { selected: number }) => void;
+  setPage: Dispatch<SetStateAction<number>>;
 }) => {
+  function handlePageChange(page: { selected: number }) {
+    setPage(page.selected + 1);
+  }
   const firstMenu = menus[0];
   if (firstMenu == null) return <div></div>;
   const start = (page - 1) * 3;
