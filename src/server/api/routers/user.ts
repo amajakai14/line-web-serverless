@@ -5,7 +5,7 @@ import {
 import { generateRandomPassword, hashPassword } from "../../../utils/password";
 
 import { TRPCError } from "@trpc/server";
-import { TStaff } from "../../../pages/admin/staff";
+import type { TStaff } from "../../../pages/admin/staff";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
@@ -54,7 +54,7 @@ export const userRouter = createTRPCRouter({
       };
     }
     const result = await ctx.prisma.user.findMany({
-      select: { id: true, name: true },
+      select: { id: true, name: true, email: true },
       where: { role: "STAFF", corporation_id },
     });
     if (!result) {

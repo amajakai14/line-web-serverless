@@ -1,47 +1,45 @@
-import { useEffect } from "react";
-import { api } from "../../utils/api";
+import { useState } from "react";
+import type { TStaff } from "../../pages/admin/staff";
+import CustomPagination from "../CustomPagination";
 
-const StaffList = ({ refetchStaff }: { refetchStaff: boolean }) => {
-  const fetchData = api.user.getStaff.useQuery();
-  useEffect(() => {
-    const refetchData = fetchData.refetch();
-    refetchData.then((data) => {
-      if (data.status === "loading") {
-        return <div>Loading</div>;
-      }
-      if (fetchData.status === "error") {
-        return <div>{fetchData.error.message}</div>;
-      }
-      const staffList = fetchData.data?.result;
-      return (
-        <>
-          {staffList &&
-            staffList.map((staff) => (
-              <div key={staff.id}>
-                <div>{staff.name ? staff.name : "No name registered"}</div>
-              </div>
-            ))}
-        </>
-      );
-    });
-  }, [refetchStaff]);
-  if (fetchData.status === "error") {
-    return <div>{fetchData.error.message}</div>;
+const StaffList = ({ staffList }: { staffList: TStaff[] | undefined }) => {
+  const perPage = 10;
+  const [page, setPage] = useState(1);
+
+  function handlePageChange(page: { selected: number }) {
+    setPage(page.selected + 1);
   }
-  if (fetchData.status === "loading" || !fetchData.data) {
-    return <div>Loading</div>;
-  }
-  const staffList = fetchData.data.result;
+  if (!staffList) return <div></div>;
+  const start = (page - 1) * perPage;
+  const end = start + perPage;
+  const staffInPage = staffList.slice(start, end);
   return (
-    <>
-      {staffList &&
-        staffList.map((staff) => (
-          <div key={staff.id}>
-            <div>{staff.name ? staff.name : "No name registered"}</div>
-          </div>
-        ))}
-    </>
+    <div>
+      <table className="border-2 border-black">
+        <thead className="border-2 border-black ">
+          <tr>
+            <th className="border-2 border-black px-2">name</th>
+            <th className="border-2 border-black px-2">mail address</th>
+          </tr>
+        </thead>
+        <tbody className="border-2 border-black px-2">
+          {staffList &&
+            staffInPage.map((staff) => (
+              <tr key={staff.id} className="border-2 border-black">
+                <td className="border-2 border-black px-2">
+                  {staff.name ? staff.name : "No name registered"}
+                </td>
+                <td className="border-2 border-black px-2">{staff.email}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <CustomPagination
+        perPage={perPage}
+        dataCount={staffList.length}
+        handlePageChange={handlePageChange}
+      />
+    </div>
   );
 };
-
 export default StaffList;

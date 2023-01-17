@@ -48,7 +48,7 @@ const StaffRegisterForm = ({
   };
 
   return (
-    <div className="radius flex flex-col items-center gap-2 border p-4">
+    <div className="radius flex items-center gap-2 border p-4">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
         {successMessage && (
           <p className="text-center text-green-600">{successMessage}</p>
