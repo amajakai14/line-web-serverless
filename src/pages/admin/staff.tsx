@@ -5,11 +5,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import StaffList from "../../components/staff/StaffList";
 import StaffRegisterForm from "../../components/staff/StaffRegisterform";
+import { api } from "../../utils/api";
 export type TStaff = {
   id: string;
   name: string | null;
+  email: string | null;
 };
-const Home: NextPage = () => {
+const Index: NextPage = () => {
   return (
     <>
       <Head>
@@ -29,28 +31,34 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Index;
 
 const Staff = () => {
   const { data: sessionData, status } = useSession();
   const [refetchStaff, setRefetchStaff] = useState(false);
   const router = useRouter();
+  const fetchData = api.user.getStaff.useQuery();
   useEffect(() => {
     if (status == "unauthenticated") {
       router.push("/admin");
     }
-    console.log("staff page re render");
-  }, [router, sessionData, status]);
-  if (status === "loading") {
+    fetchData.refetch();
+  }, [sessionData, status, refetchStaff, router, fetchData]);
+  if (status === "loading" || fetchData.status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;
   }
+  let staffList: TStaff[] | undefined;
+  if (fetchData.status === "error") {
+    staffList = undefined;
+  }
+  staffList = fetchData.data?.result;
   return (
     <>
       <StaffRegisterForm
         refetchStaff={refetchStaff}
         setRefetchStaff={setRefetchStaff}
       />
-      <StaffList refetchStaff={refetchStaff} />
+      <StaffList staffList={staffList} />
     </>
   );
 };
