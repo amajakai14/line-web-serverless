@@ -45,11 +45,12 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
+        console.log("request body", req.body);
+        console.log("requeset method", req.method);
         const user = await prisma.user.findUnique({
           where: { email: credentials?.username },
         });
-        console.log("user in prisma", user);
         if (user) {
           return user;
         } else {

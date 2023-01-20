@@ -39,10 +39,6 @@ export const userRouter = createTRPCRouter({
       };
     }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
-
   getStaff: protectedProcedure.query(async ({ ctx }) => {
     const { corporation_id } = ctx.session.user;
     const cached = await ctx.redis.get(corporation_id + "getStaff");
@@ -85,7 +81,7 @@ export const userRouter = createTRPCRouter({
         });
       }
       const password = generateRandomPassword();
-      const hash = await hashPassword(password);
+      const hash = await hashPassword("Password123");
       await ctx.prisma.user.create({
         data: {
           email,

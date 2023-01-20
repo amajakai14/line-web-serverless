@@ -12,3 +12,8 @@ export const isValidPassword = (text: string) => {
 export const isValidPrice = (value: number) => {
   return !Number.isNaN(value) && value >= 0 && value <= 20000;
 };
+
+export const isValidTableName = (text: string) => {
+  const regex = /^[a-zA-Z0-9-_]+$/;
+  return regex.test(text);
+};
