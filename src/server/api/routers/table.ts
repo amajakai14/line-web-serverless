@@ -1,5 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import { createTableSchema } from "../../../schema/table.schema";
+import {
+  createTableSchema,
+  getTableSchema,
+} from "../../../schema/table.schema";
 import { isValidTableName } from "../../../utils/input-validation";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -35,4 +38,34 @@ export const tableRouter = createTRPCRouter({
       result,
     };
   }),
+
+  getTable: protectedProcedure
+    .input(getTableSchema)
+    .query(async ({ ctx, input }) => {
+      const { table_id } = input;
+      const { corporation_id } = ctx.session.user;
+      const today = new Date();
+      const todayAtMidNight = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        0,
+        0,
+        0,
+        0
+      );
+      const result = await ctx.prisma.channel.findMany({
+        select: {
+          id: true,
+          status: true,
+          time_start: true,
+          time_end: true,
+        },
+        where: { table_id, time_start: { gte: todayAtMidNight } },
+      });
+      return {
+        status: 201,
+        result,
+      };
+    }),
 });

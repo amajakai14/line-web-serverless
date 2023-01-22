@@ -22,6 +22,9 @@ export const serverSchema = z.object({
   ),
   // DISCORD_CLIENT_ID: z.string(),
   // DISCORD_CLIENT_SECRET: z.string(),
+  TZ: z.string(),
+  QSTASH_CURRENT_SIGNING_KEY: z.string(),
+  QSTASH_NEXT_SIGNING_KEY: z.string(),
 });
 
 /**

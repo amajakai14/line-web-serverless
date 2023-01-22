@@ -124,6 +124,7 @@ model Course {
     course_on_menu   CourseOnMenu[]
 }
 
+//Online Offline Clearing
 model Channel {
     id         String    @id @unique
     table_id   Int

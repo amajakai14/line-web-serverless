@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { TTable } from "../../pages/admin/table";
 import CustomPagination from "../CustomPagination";
 
-const TableList = ({ tableList }: { tableList: TTable[] | undefined }) => {
+const TableList = ({
+  tableList,
+}: {
+  tableList:
+    | { id: number; table_name: string; is_occupied: boolean }[]
+    | undefined;
+}) => {
   const perPage = 10;
   const [page, setPage] = useState(1);
 

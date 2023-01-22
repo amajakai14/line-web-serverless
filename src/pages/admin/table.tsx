@@ -6,11 +6,7 @@ import { useEffect, useState } from "react";
 import TableList from "../../components/tables/TableList";
 import TableRegisterForm from "../../components/tables/TableRegisterform";
 import { api } from "../../utils/api";
-export type TTable = {
-  id: number;
-  table_name: string;
-  is_occupied: boolean;
-};
+
 const Index: NextPage = () => {
   return (
     <>
@@ -47,7 +43,7 @@ const Table = () => {
   if (status === "loading" || fetchData.status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;
   }
-  let tableList: TTable[] | undefined;
+  let tableList;
   if (fetchData.status === "error") {
     tableList = undefined;
   }
