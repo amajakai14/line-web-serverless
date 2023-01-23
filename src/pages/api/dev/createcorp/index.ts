@@ -10,11 +10,10 @@ export default async function handler(
     console.log("no prisma found");
     return res.status(404);
   }
-  const result = await prisma.channel.updateMany({
-    data: { status: "EXPIRED" },
-    where: { time_end: { lte: new Date() } },
+  const result = await prisma.corporation.create({
+    data: { name: "Buffet 101" },
   });
-  res.status(200).json({ count: result.count });
+  res.status(200).json({ result });
 }
 
 /**

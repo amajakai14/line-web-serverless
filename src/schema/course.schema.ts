@@ -2,6 +2,7 @@ import z from "zod";
 
 export const createCourseSchema = z.object({
   course_name: z.string(),
+  course_price: z.number().nonnegative(),
   course_timelimit: z.number().nonnegative(),
 });
 

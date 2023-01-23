@@ -49,6 +49,15 @@ const AddCourse = () => {
           {errors.course_name && (
             <p className="text-center text-red-600">This field is required</p>
           )}
+          <label>Course price</label>
+          <input
+            className="rounded border py-1 px-4"
+            type="text"
+            {...register("course_price", { required: true })}
+          />
+          {errors.course_price && (
+            <p className="text-center text-red-600">This field is required</p>
+          )}
           <label>Timelimit</label>
           <input
             className="rounded border py-1 px-4"

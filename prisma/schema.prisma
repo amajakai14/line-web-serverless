@@ -67,6 +67,7 @@ model User {
     role           String?
     accounts       Account[]
     sessions       Session[]
+    created_at     DateTime    @default(now())
     corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     corporation_id String
 }
@@ -94,7 +95,7 @@ model Menu {
     menu_type      String
     price          Int            @default(0)
     available      Boolean        @default(true)
-    created_at     DateTime?      @default(now())
+    created_at     DateTime       @default(now())
     updated_at     DateTime?
     corporation    Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     corporation_id String
@@ -115,25 +116,26 @@ model CourseOnMenu {
 model Course {
     id               Int            @id @default(autoincrement())
     course_name      String
+    course_price     Int
     course_timelimit Int?           @default(90)
     course_priority  Int?
-    created_at       DateTime?      @default(now())
+    created_at       DateTime       @default(now())
     updated_at       DateTime?
     corporation      Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     corporation_id   String
     course_on_menu   CourseOnMenu[]
 }
 
-//Online Offline Clearing
+//ONLINE EXPIRED
 model Channel {
-    id         String    @id @unique
-    table_id   Int
-    user_id    Int
-    course_id  Int
-    status     String
-    time_start DateTime? @default(now())
-    time_end   DateTime?
-    orders     Order[]
+    id          String   @id @unique
+    table_id    Int
+    user_id     Int
+    course_name String
+    status      String
+    time_start  DateTime @default(now())
+    time_end    DateTime
+    orders      Order[]
 
     @@unique([user_id, table_id])
 }
@@ -144,7 +146,7 @@ model Order {
     order_amount Int
     total_price  Int
     process_type String
-    created_at   DateTime? @default(now())
+    created_at   DateTime  @default(now())
     updated_at   DateTime?
     channels     Channel   @relation(fields: [channel_id], references: [id], onDelete: Cascade)
     channel_id   String

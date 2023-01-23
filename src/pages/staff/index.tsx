@@ -116,17 +116,21 @@ const TableDetail = ({
   }
   coursesDetail = fetchCourseData.data?.result;
   tableDetail = fetchData.data?.result;
-  if (!tableDetail || tableDetail?.length === 0)
+  const inUseChannel = tableDetail?.filter(
+    (table) => table.status === "ONLINE"
+  )[0];
+  const pastChannel = tableDetail?.filter(
+    (table) => table.status === "EXPIRED"
+  );
+  if (!tableDetail || !inUseChannel)
     return (
       <div>
         <SetZero setTableId={setTableId} />
+        <ChannelHistory tableDetail={pastChannel} />
         <CreateChannel table_id={table_id} courses={coursesDetail} />
       </div>
     );
   const testDate = new Date().toLocaleTimeString();
-  const inUseChannel = tableDetail.filter(
-    (table) => table.status === "ONLINE"
-  )[0];
   return (
     <div>
       <SetZero setTableId={setTableId} />
@@ -171,7 +175,16 @@ const ChannelHistory = ({
       }[]
     | undefined;
 }) => {
-  return;
+  return (
+    <>
+      {tableDetail &&
+        tableDetail.map((val) => (
+          <div key={val.id}>
+            <div></div>
+          </div>
+        ))}
+    </>
+  );
 };
 
 const SetZero = ({

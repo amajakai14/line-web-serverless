@@ -23,7 +23,7 @@ export const courseRouter = createTRPCRouter({
   register: protectedProcedure
     .input(createCourseSchema)
     .mutation(async ({ ctx, input }) => {
-      const { course_name, course_timelimit } = input;
+      const { course_name, course_price, course_timelimit } = input;
       const { corporation_id } = ctx.session.user;
       if (!isValidPrice(course_timelimit)) {
         throw new TRPCError({
@@ -34,6 +34,7 @@ export const courseRouter = createTRPCRouter({
       await ctx.prisma.course.create({
         data: {
           course_name,
+          course_price,
           course_timelimit,
           corporation: { connect: { id: corporation_id } },
         },
