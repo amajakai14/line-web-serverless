@@ -42,7 +42,7 @@ const Index = () => {
   }
 
   if (sessionData?.user?.role !== "STAFF") {
-    router.push("/login");
+    router.push("/");
   }
   return (
     <>

@@ -51,7 +51,7 @@ model Corporation {
     id           String         @id @default(cuid())
     name         String?
     users        User[]
-    tables       Table[]
+    tables       Desk[]
     menus        Menu[]
     courses      Course[]
     CourseOnMenu CourseOnMenu[]
@@ -80,7 +80,7 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Table {
+model Desk {
     id          Int     @id @default(autoincrement())
     table_name  String
     is_occupied Boolean

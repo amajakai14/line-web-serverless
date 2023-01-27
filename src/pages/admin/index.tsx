@@ -31,7 +31,7 @@ const Index = () => {
   const router = useRouter();
   useEffect(() => {
     if (status == "unauthenticated") {
-      router.push("/login");
+      router.push("/index");
     }
   }, [sessionData, status, router]);
   if (status === "loading") {

@@ -1,17 +1,32 @@
-import { error } from "console";
 import * as mysql from "mysql";
+import * as statement from "./sqldata";
 
-const sql = `
-INSERT INTO Corporation (id, name) VALUES ('testcorp', 'Test Corporate');
-`;
+executeSql();
+function executeSql() {
+  const connection = connect();
+  query(statement.removeTable, connection);
+  query(statement.removeCorp, connection);
+  query(statement.addCorp, connection);
+  query(statement.addTable, connection);
+  end(connection);
+}
 
-const connection = mysql.createConnection(
-  "mysql://lineserverdb:lineserverpw@localhost:3306/linemenudb"
-);
+function connect() {
+  return mysql.createConnection(
+    "mysql://lineserverdb:lineserverpw@localhost:3306/linemenudb"
+  );
+}
 
-connection.query(sql, (err, results, fields) => {
-  if (err) throw error;
-  console.log(results);
-});
+function query(statement: string, connection: mysql.Connection) {
+  connection.query(statement, (err, results, fields) => {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+    console.log(results);
+  });
+}
 
-connection.end();
+function end(connection: mysql.Connection) {
+  connection.end();
+}
