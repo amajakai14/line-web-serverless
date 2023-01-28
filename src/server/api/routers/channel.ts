@@ -13,7 +13,7 @@ export const channelRouter = createTRPCRouter({
     .input(createChannelSchema)
     .mutation(async ({ ctx, input }) => {
       const { table_id, course_id } = input;
-      const isOccupied = await ctx.prisma.table.findFirst({
+      const isOccupied = await ctx.prisma.desk.findFirst({
         where: { id: table_id, is_occupied: true },
       });
       if (isOccupied) {
@@ -29,7 +29,7 @@ export const channelRouter = createTRPCRouter({
         id = crypto.randomUUID();
       }
       const course = await ctx.prisma.course.findUnique({
-        select: { id: true, course_timelimit: true },
+        select: { id: true, course_name: true, course_timelimit: true },
         where: { id: course_id },
       });
       if (!course) {
@@ -49,7 +49,7 @@ export const channelRouter = createTRPCRouter({
         data: {
           id,
           table_id,
-          course_id,
+          course_name: course.course_name,
           user_id: 1,
           status: "ONLINE",
           time_start,
