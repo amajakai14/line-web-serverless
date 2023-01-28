@@ -33,7 +33,7 @@ const Table = () => {
   const { data: sessionData, status } = useSession();
   const [refetchStaff, setRefetchStaff] = useState(false);
   const router = useRouter();
-  const fetchData = api.table.getTables.useQuery();
+  const fetchData = api.desk.getTables.useQuery();
   useEffect(() => {
     if (status == "unauthenticated") {
       router.push("/login");

@@ -57,7 +57,7 @@ type TTableList = {
 };
 
 const TableList = () => {
-  const fetchData = api.table.getTables.useQuery();
+  const fetchData = api.desk.getTables.useQuery();
   const [tableId, setTableId] = useState<TTableList | undefined>(undefined);
   if (fetchData.status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;
@@ -101,7 +101,7 @@ const TableDetail = ({
   setTableId: Dispatch<SetStateAction<TTableList | undefined>>;
 }) => {
   const { table_id, table_name } = table;
-  const fetchData = api.table.getTable.useQuery({ table_id });
+  const fetchData = api.desk.getTable.useQuery({ table_id });
   const fetchCourseData = api.course.get.useQuery();
   if (fetchData.status === "loading" || fetchCourseData.status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;

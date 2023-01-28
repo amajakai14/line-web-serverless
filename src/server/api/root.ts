@@ -1,10 +1,10 @@
 import { channelRouter } from "./routers/channel";
 import { courseRouter } from "./routers/course";
 import { courseOnMenuRouter } from "./routers/course-on-menu";
+import { deskRouter } from "./routers/desk";
 import { exampleRouter } from "./routers/example";
 import { menuRouter } from "./routers/menu";
 import { schedulerRouter } from "./routers/scheduler";
-import { tableRouter } from "./routers/table";
 import { userRouter } from "./routers/user";
 import { createTRPCRouter } from "./trpc";
 
@@ -19,7 +19,7 @@ export const appRouter = createTRPCRouter({
   menu: menuRouter,
   course: courseRouter,
   courseOnMenu: courseOnMenuRouter,
-  table: tableRouter,
+  desk: deskRouter,
   channel: channelRouter,
   scheduler: schedulerRouter,
 });

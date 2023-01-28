@@ -6,7 +6,7 @@ import {
 import { isValidTableName } from "../../../utils/input-validation";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
-export const tableRouter = createTRPCRouter({
+export const deskRouter = createTRPCRouter({
   register: protectedProcedure
     .input(createTableSchema)
     .mutation(async ({ ctx, input }) => {
@@ -18,7 +18,7 @@ export const tableRouter = createTRPCRouter({
           message: "table name only contain alphabet, number, -, or _",
         });
       }
-      await ctx.prisma.table.create({
+      await ctx.prisma.desk.create({
         data: {
           table_name,
           is_occupied: false,
@@ -29,7 +29,7 @@ export const tableRouter = createTRPCRouter({
 
   getTables: protectedProcedure.query(async ({ ctx }) => {
     const { corporation_id } = ctx.session.user;
-    const result = await ctx.prisma.table.findMany({
+    const result = await ctx.prisma.desk.findMany({
       where: { corporation_id },
       select: { id: true, table_name: true, is_occupied: true },
     });

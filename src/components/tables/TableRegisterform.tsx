@@ -15,7 +15,7 @@ const TableRegisterForm = ({
 }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
-  const mutation = api.table.register.useMutation({
+  const mutation = api.desk.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
     onSuccess: () => {
       setRefetchStaff(!refetchStaff);
