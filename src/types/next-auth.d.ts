@@ -1,4 +1,5 @@
 import { type DefaultSession } from "next-auth";
+import "next-auth/jwt";
 
 declare module "next-auth" {
   /**
@@ -10,5 +11,21 @@ declare module "next-auth" {
       role: string;
       corporation_id: string;
     } & DefaultSession["user"];
+  }
+
+  interface User {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    role?: string | null;
+    corporation_id?: string | null;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string | null;
+    corporation_id?: string | null;
   }
 }
