@@ -5,7 +5,6 @@ import {
 import { generateRandomPassword, hashPassword } from "../../../utils/password";
 
 import { TRPCError } from "@trpc/server";
-import type { TStaff } from "../../../pages/admin/staff";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
@@ -41,14 +40,6 @@ export const userRouter = createTRPCRouter({
 
   getStaff: protectedProcedure.query(async ({ ctx }) => {
     const { corporation_id } = ctx.session.user;
-    const cached = await ctx.redis.get(corporation_id + "getStaff");
-    if (cached) {
-      const result: TStaff[] = JSON.parse(cached);
-      return {
-        status: 201,
-        result,
-      };
-    }
     const result = await ctx.prisma.user.findMany({
       select: { id: true, name: true, email: true },
       where: { role: "STAFF", corporation_id },
@@ -59,7 +50,6 @@ export const userRouter = createTRPCRouter({
         message: "No staff is found",
       };
     }
-    ctx.redis.set(corporation_id + "getStaff", JSON.stringify(result));
     return {
       status: 201,
       result,
@@ -91,7 +81,6 @@ export const userRouter = createTRPCRouter({
           corporation: { connect: { id: corporation_id } },
         },
       });
-      await ctx.redis.del(corporation_id + "getStaff");
       return {
         status: 201,
         message: "Staff Account created Successfully",

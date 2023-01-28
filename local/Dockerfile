@@ -1,10 +1,9 @@
-FROM mysql:8.0.31
+FROM postgres:11
 
-ENV MYSQL_ROOT_PASSWORD=admin
+ENV POSTGRES_USER=lineserverdb
+ENV POSTGRES_PASSWORD=lineserverpw
+ENV POSTGRES_DB=linemenudb
 
-ADD init.sql /docker-entrypoint-initdb.d/
+EXPOSE 5432
 
-EXPOSE 3306 
-
-CMD ["mysqld", "--default-authentication-plugin=mysql_native_password"]
-
+CMD ["postgres"]

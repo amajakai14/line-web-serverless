@@ -6,16 +6,16 @@ cd "$SCRIPT_DIR"
 
 # Stop and remove the old container if it exists
 echo "stop docker container"
-docker stop linemenu-mysql-container
+docker stop linemenu-postgres-container
 echo "remove docker container"
-docker rm linemenu-mysql-container
+docker rm linemenu-postgres-container
 
 # Check if the image exists
-if [ "$(docker images -q linemenu-mysql-image:latest 2> /dev/null)" = "" ]; then
+if [ "$(docker images -q linemenu-postgres-image:latest 2> /dev/null)" = "" ]; then
   # Build the image if it does not exist
-  docker build -t linemenu-mysql-image .
+  docker build -t linemenu-postgres-image .
 fi
 
 # Run the container
 echo "run container"
-docker run -d --name linemenu-mysql-container -p 3306:3306 linemenu-mysql-image
+docker run -d --name linemenu-postgres-container -p 5432:5432 linemenu-postgres-image

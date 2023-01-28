@@ -1,32 +1,35 @@
-import * as mysql from "mysql";
+import { Client } from "pg";
 import * as statement from "./sqldata";
 
 executeSql();
-function executeSql() {
-  const connection = connect();
-  query(statement.removeTable, connection);
-  query(statement.removeCorp, connection);
-  query(statement.addCorp, connection);
-  query(statement.addTable, connection);
-  end(connection);
+async function executeSql() {
+  const connection = await connect();
+  await query(statement.removeTable, connection);
+  await query(statement.removeCorp, connection);
+  await query(statement.addCorp, connection);
+  await query(statement.addTable, connection);
+  await end(connection);
+  console.log("migration done");
+}
+const credentials = {
+  user: "postgres",
+  host: "localhost",
+  database: "nodedemo",
+  password: "yourpassword",
+  port: 5432,
+};
+
+async function connect() {
+  const client = new Client(credentials);
+  await client.connect();
+  return client;
 }
 
-function connect() {
-  return mysql.createConnection(
-    "mysql://lineserverdb:lineserverpw@localhost:3306/linemenudb"
-  );
+async function query(statement: string, connection: Client) {
+  const result = await connection.query(statement);
+  console.log(result);
 }
 
-function query(statement: string, connection: mysql.Connection) {
-  connection.query(statement, (err, results, fields) => {
-    if (err) {
-      console.log(err);
-      throw err;
-    }
-    console.log(results);
-  });
-}
-
-function end(connection: mysql.Connection) {
+function end(connection: Client) {
   connection.end();
 }
