@@ -15,7 +15,7 @@ export const menuRouter = createTRPCRouter({
           message: "price should be a number",
         });
       }
-      await ctx.prisma.menu.create({
+      const result = await ctx.prisma.menu.create({
         data: {
           menu_name,
           menu_type,
@@ -23,20 +23,24 @@ export const menuRouter = createTRPCRouter({
           corporation: { connect: { id: corporation_id } },
         },
       });
-      const menus = await ctx.prisma.menu.findMany({
-        where: { corporation_id },
-      });
-      if (menus == null) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "unable to get any of menulist",
-        });
-      }
-      const transform = menus.map((menu) => menuListSchema.parse(menu));
-      return {
-        status: 201,
-        message: "menu created Successfully",
-        result: transform,
-      };
+      return result ? { status: 201 } : { status: 401 };
     }),
+
+  get: protectedProcedure.query(async ({ ctx }) => {
+    const { corporation_id } = ctx.session.user;
+    const menus = await ctx.prisma.menu.findMany({
+      where: { corporation_id },
+    });
+    if (menus == null) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "unable to get any of menulist",
+      });
+    }
+    const transform = menus.map((menu) => menuListSchema.parse(menu));
+    return {
+      status: 200,
+      result: transform,
+    };
+  }),
 });

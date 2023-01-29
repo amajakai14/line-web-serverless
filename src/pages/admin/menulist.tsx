@@ -2,11 +2,18 @@ import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AddCourse from "../../components/menus/AddCourse";
 import AddMenu from "../../components/menus/AddMenu";
+import type { TNavbar } from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 
-const Home: NextPage = () => {
+const linkList: TNavbar = [
+  { uri: "#", text: "Add Course/Menu" },
+  { uri: "#", text: "manage course" },
+];
+
+const MenuList: NextPage = () => {
   return (
     <>
       <Head>
@@ -14,10 +21,11 @@ const Home: NextPage = () => {
         <meta name="description" content="Restaurant Management" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className=" flex min-h-screen flex-col items-center justify-center">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+      <main className="min-h-screen bg-slate-50">
+        <Navbar linkList={linkList} />
+        <div className="container flex flex-col items-center justify-center gap-12 p-2 ">
           <div className="flex flex-col items-center gap-2">
-            <Menulist />
+            <AddMenuAndCourse />
             <p className="text-center text-2xl text-white">Menu List</p>
           </div>
         </div>
@@ -26,10 +34,11 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default MenuList;
 
-const Menulist = () => {
+const AddMenuAndCourse = () => {
   const { data: sessionData, status } = useSession();
+  const [display, setDisplay] = useState(false);
   const router = useRouter();
   useEffect(() => {
     if (status == "unauthenticated") {
@@ -41,8 +50,32 @@ const Menulist = () => {
   }
   return (
     <>
-      <AddMenu />
-      <AddCourse />
+      <div className="sm:flex sm:justify-center sm:gap-2">
+        <div className="flex justify-center text-sm sm:hidden">
+          <button
+            className={`rounded-l-md bg-slate-100 p-2 hover:bg-sky-300 ${
+              display ? "bg-slate-200" : "bg-sky-400"
+            }`}
+            onClick={() => setDisplay((val) => !val)}
+          >
+            Menu
+          </button>
+          <button
+            className={`rounded-r-md bg-slate-100 p-2 hover:bg-sky-300 ${
+              !display ? "bg-slate-200" : "bg-sky-400"
+            }`}
+            onClick={() => setDisplay((val) => !val)}
+          >
+            Course
+          </button>
+        </div>
+        <div className={`${display ? "" : "hidden"} md:block`}>
+          <AddMenu />
+        </div>
+        <div className={`${display ? "" : "hidden"} md:block`}>
+          <AddCourse />
+        </div>
+      </div>
     </>
   );
 };

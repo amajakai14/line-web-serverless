@@ -3,6 +3,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import type { CourseList, CreateCourseInput } from "../../schema/course.schema";
 import { api } from "../../utils/api";
 import { isValidPrice } from "../../utils/input-validation";
+import LoadingButton from "../LoadingButton";
 
 const AddCourse = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -34,8 +35,8 @@ const AddCourse = () => {
   };
 
   return (
-    <>
-      <div className="radius flex flex-col items-center gap-2 border p-4">
+    <div className="container p-4">
+      <div className="flex flex-col items-center border">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>
@@ -53,7 +54,10 @@ const AddCourse = () => {
           <input
             className="rounded border py-1 px-4"
             type="text"
-            {...register("course_price", { required: true })}
+            {...register("course_price", {
+              required: true,
+              valueAsNumber: true,
+            })}
           />
           {errors.course_price && (
             <p className="text-center text-red-600">This field is required</p>
@@ -68,12 +72,15 @@ const AddCourse = () => {
               valueAsNumber: true,
             })}
           />
-
-          <input type="submit" className="rounded border py-1 px-4" />
+          {mutation.isLoading ? (
+            <LoadingButton />
+          ) : (
+            <input type="submit" className="rounded border py-1 px-4" />
+          )}
         </form>
       </div>
       {courses && <CourseTable courses={courses} />}
-    </>
+    </div>
   );
 };
 

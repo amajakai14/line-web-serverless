@@ -1,11 +1,17 @@
 import { type NextPage } from "next";
-import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import type { TNavbar } from "../components/Navbar";
+import Navbar from "../components/Navbar";
 
-import { api } from "../utils/api";
+const linkList: TNavbar = [
+  { uri: "#", text: "Products" },
+  { uri: "#", text: "Login" },
+  { uri: "#", text: "Staff" },
+  { uri: "#", text: "Admin" },
+  { uri: "#", text: "Contact Us" },
+];
 
 const Home: NextPage = () => {
   return (
@@ -16,7 +22,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-slate-50">
-        <Navbar />
+        <Navbar linkList={linkList} />
         <div className="px-4 pt-2 md:px-10 md:pt-10">
           <FirstImpression />
         </div>
@@ -66,182 +72,6 @@ const GetStarted = ({ className }: { className: string | undefined }) => {
       >
         <span className="text-white">Get Started</span>
       </Link>
-    </div>
-  );
-};
-
-const HamburgerMenu: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-black transition ease transform duration-300`;
-
-  return (
-    <nav className="w-full bg-violet-500 px-4 pt-2 md:hidden">
-      <div>
-        <button
-          onClick={() => {
-            setIsOpen(!isOpen);
-          }}
-          className="group flex h-12 w-12 flex-col items-start justify-start rounded  border-black"
-        >
-          <div
-            className={`${genericHamburgerLine} ${
-              isOpen
-                ? "translate-y-3 rotate-45 opacity-50 group-hover:opacity-100"
-                : "opacity-50 group-hover:opacity-100"
-            }`}
-          ></div>
-          <div
-            className={`${genericHamburgerLine} ${
-              isOpen ? "opacity-0" : "opacity-50 group-hover:opacity-100"
-            }`}
-          ></div>
-          <div
-            className={`${genericHamburgerLine} ${
-              isOpen
-                ? "-translate-y-3 -rotate-45 opacity-50 group-hover:opacity-100"
-                : "opacity-50 group-hover:opacity-100"
-            }`}
-          ></div>
-        </button>
-      </div>
-      <div
-        className={`w-full transition-all duration-500 ease-in-out ${
-          isOpen ? "visible h-52" : "invisible h-0"
-        }`}
-      >
-        <ul className="flex flex-col transition-none duration-300">
-          <li className="py-2">
-            <Link
-              href={"#"}
-              className="block w-full text-white hover:bg-violet-600"
-            >
-              Products
-            </Link>
-          </li>
-          <li className="py-2">
-            <Link
-              href={"/login"}
-              className="block w-full text-white hover:bg-violet-600"
-            >
-              Login
-            </Link>
-          </li>
-          <li className="py-2">
-            <Link
-              href={"/staff"}
-              className="block w-full text-white hover:bg-violet-600"
-            >
-              Staff
-            </Link>
-          </li>
-          <li className="py-2">
-            <Link
-              href={"/admin"}
-              className="block w-full text-white hover:bg-violet-600"
-            >
-              Admin
-            </Link>
-          </li>
-          <li className="py-2">
-            <Link
-              href={"#"}
-              className="block w-full text-white hover:bg-violet-600"
-            >
-              Contact Us
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  );
-};
-
-const Navbar: React.FC = () => {
-  const staff = undefined;
-  const admin = undefined;
-  return (
-    <>
-      <HamburgerMenu />
-      <nav className="hidden w-full bg-gray-800 md:block">
-        <div className="mx-auto flex justify-between bg-violet-500 px-4 py-2">
-          <div>some logo</div>
-          <div className="flex ">
-            <div>
-              <ul className="flex items-center justify-center">
-                <li className="px-4">
-                  <Link
-                    href={"#"}
-                    className="block w-full text-white hover:bg-violet-600"
-                  >
-                    Products
-                  </Link>
-                </li>
-                <li className="px-4">
-                  <Link
-                    href={"/login"}
-                    className="block w-full text-white hover:bg-violet-600"
-                  >
-                    Login
-                  </Link>
-                </li>
-                <li className="px-4">
-                  <Link
-                    href={"/staff"}
-                    className="block w-full text-white hover:bg-violet-600"
-                  >
-                    Staff
-                  </Link>
-                </li>
-                <li className="px-4">
-                  <Link
-                    href={"/admin"}
-                    className="block w-full text-white hover:bg-violet-600"
-                  >
-                    Admin
-                  </Link>
-                </li>
-                <li className="px-4">
-                  <Link
-                    href={"#"}
-                    className="block w-full text-white hover:bg-violet-600"
-                  >
-                    Contact Us
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
-    </>
-  );
-};
-
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && (
-          <span>
-            Logged in as{" "}
-            {`${sessionData.user?.name},corporation id: ${sessionData.user?.corporation_id}, role: ${sessionData.user?.role}`}
-          </span>
-        )}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => signOut() : () => signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { isValidEmail, isValidPassword } from "../utils/input-validation";
 
 import type { CreateUserInput } from "../schema/user.schema";
 import { api } from "../utils/api";
+import LoadingButton from "./LoadingButton";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -14,7 +15,6 @@ const RegisterForm = () => {
     onError: (e) => setErrorMessage(e.message),
     onSuccess: () => router.push("/"),
   });
-
   const {
     register,
     handleSubmit,
@@ -63,7 +63,14 @@ const RegisterForm = () => {
           <p className="text-center text-red-600">This field is required</p>
         )}
 
-        <input type="submit" className="rounded border py-1 px-4" />
+        {mutation.isLoading ? (
+          <LoadingButton />
+        ) : (
+          <input
+            type="submit"
+            className="rounded border py-1 px-4 hover:bg-slate-300 active:bg-slate-400"
+          />
+        )}
       </form>
     </div>
   );
