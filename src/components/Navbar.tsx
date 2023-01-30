@@ -1,3 +1,4 @@
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import type { Dispatch, SetStateAction } from "react";
 import React, { useState } from "react";
@@ -91,26 +92,45 @@ const HamburgerMenu: React.FC<{ linkList: TNavbar }> = ({
   linkList: TNavbar;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: sessionData } = useSession();
 
   return (
-    <nav className="w-full bg-violet-500 px-4 pt-2 md:hidden">
+    <nav
+      className="w-full bg-violet-500 px-4 pt-2 md:hidden"
+      onClick={() => {
+        if (isOpen) {
+          setIsOpen((val) => !val);
+        }
+      }}
+    >
       <HamburgerIcon isOpen={isOpen} setIsOpen={setIsOpen} />
+      {/* <div
+        className={`w-full transition-all duration-500 ease-in-out ${dynamic}`}
+      > */}
       <div
-        className={`w-full transition-all duration-500 ease-in-out ${
-          isOpen ? "visible h-52" : "invisible h-0"
+        className={`fixed top-0 left-0 z-30 h-full w-64 transform overflow-auto bg-violet-300  transition-all duration-300 ease-in-out ${
+          isOpen ? "translate-x-0 " : "-translate-x-full"
         }`}
       >
-        <ul className="flex flex-col transition-none duration-300">
+        <ul className="flex flex-col pt-10 pl-4 duration-300">
           {linkList.map((link) => (
             <li key={link.text} className="py-2">
               <Link
                 href={link.uri}
-                className="block w-full text-white hover:bg-violet-600"
+                className="block w-full text-black hover:bg-violet-600"
               >
                 {link.text}
               </Link>
             </li>
           ))}
+          {sessionData && (
+            <button
+              className="block h-10 w-full text-start text-black hover:bg-violet-600"
+              onClick={() => signOut()}
+            >
+              Log Out
+            </button>
+          )}
         </ul>
       </div>
     </nav>
