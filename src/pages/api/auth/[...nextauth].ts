@@ -30,11 +30,6 @@ export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
-    // DiscordProvider({
-    //   clientId: env.DISCORD_CLIENT_ID,
-    //   clientSecret: env.DISCORD_CLIENT_SECRET,
-    // }),
-    // ...add more providers here
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -45,9 +40,7 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        console.log("request body", req.body);
-        console.log("requeset method", req.method);
+      async authorize(credentials) {
         const user = await prisma.user.findUnique({
           where: { email: credentials?.username },
         });

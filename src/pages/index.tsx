@@ -1,4 +1,5 @@
 import { type NextPage } from "next";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,13 +8,24 @@ import Navbar from "../components/Navbar";
 
 const linkList: TNavbar = [
   { uri: "#", text: "Products" },
-  { uri: "#", text: "Login" },
-  { uri: "#", text: "Staff" },
-  { uri: "#", text: "Admin" },
+  { uri: "/login", text: "Login" },
+  { uri: "/staff", text: "Staff" },
+  { uri: "/admin", text: "Admin" },
   { uri: "#", text: "Contact Us" },
 ];
 
 const Home: NextPage = () => {
+  let availableMenu: TNavbar;
+  const session = useSession();
+  if (session.status === "loading") return <div>Loading...</div>;
+  if (session.data?.user) {
+    availableMenu = linkList.filter((link) => link.text !== "Login");
+  } else {
+    availableMenu = linkList.filter(
+      (link) => link.text !== "Staff" && link.text !== "Admin"
+    );
+  }
+
   return (
     <>
       <Head>
@@ -22,7 +34,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-slate-50">
-        <Navbar linkList={linkList} />
+        <Navbar linkList={availableMenu} />
         <div className="px-4 pt-2 md:px-10 md:pt-10">
           <FirstImpression />
         </div>

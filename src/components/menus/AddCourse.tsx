@@ -7,12 +7,14 @@ import LoadingButton from "../LoadingButton";
 
 const AddCourse = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const [courses, setCourses] = useState<CourseList[] | undefined>();
 
   const mutation = api.course.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
     onSuccess: (data) => console.log(data),
   });
+
+  const fetchMenu = api.course.get.useQuery();
+  const courses = fetchMenu.data?.result;
 
   const {
     register,
@@ -26,17 +28,17 @@ const AddCourse = () => {
       setErrorMessage("price should be a positive number");
       return;
     }
-    const { status, message, result } = await mutation.mutateAsync(data);
+    const { status, message } = await mutation.mutateAsync(data);
     if (status !== 201) {
       setErrorMessage(message);
       return;
     }
-    setCourses(result);
+    fetchMenu.refetch;
   };
 
   return (
     <div className="container p-4">
-      <div className="flex flex-col items-center border">
+      <div className="flex flex-col items-center border p-4">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>
@@ -90,29 +92,25 @@ const CourseTable = ({ courses }: { courses: CourseList[] }) => {
   const firstMenu = courses[0];
   if (firstMenu == null) return <div></div>;
   return (
-    <>
-      <table className="border-collapse border-2 border-black">
+    <div className="container py-2 text-sm sm:text-lg">
+      <table>
         <thead>
           <tr className="text-left">
-            <th className="border-2 border-black px-2">Course Name</th>
-            <th className="border-2 border-black px-2">Time (Minute)</th>
+            <th className=" px-2">Course Name</th>
+            <th className="px-2">Time (Minute)</th>
           </tr>
         </thead>
         <tbody>
           {courses.map((course) => {
             return (
               <tr key={course.id} className="px-2">
-                <td className="border-2 border-black px-2 text-left">
-                  {course.course_name}
-                </td>
-                <td className="border-2 border-black px-2 text-left">
-                  {course.course_timelimit}
-                </td>
+                <td className="px-2 text-left">{course.course_name}</td>
+                <td className="px-2 text-left">{course.course_timelimit}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };

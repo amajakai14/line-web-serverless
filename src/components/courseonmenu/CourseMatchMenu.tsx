@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { CourseOnMenuList } from "../../schema/menu.schema";
 import type { TCourseOnMenu } from "../../server/api/routers/course-on-menu";
 import { api } from "../../utils/api";
+import LoadingButton from "../LoadingButton";
 
 const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
@@ -36,14 +37,14 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
       const idx = courseOnMenus.findIndex(
         (val) => val.menu_id === menu_id && val.course_id === course_id
       );
-      const newSs = courseOnMenus.filter((val, index) => index !== idx);
-      setCourseOnMenu(newSs);
+      const filtered = courseOnMenus.filter((val, index) => index !== idx);
+      setCourseOnMenu(filtered);
     } else {
-      const x = courseOnMenus.concat({
+      const matching = courseOnMenus.concat({
         menu_id,
         course_id,
       });
-      setCourseOnMenu(x);
+      setCourseOnMenu(matching);
     }
   }
   if (menus.length === 0 || courses.length === 0) {
@@ -97,7 +98,11 @@ const CourseMatchMenuTable = ({ data }: { data: TCourseOnMenu }) => {
             ))}
         </tbody>
       </table>
-      <button onClick={handleMatcher}>Save</button>
+      {mutation.isLoading ? (
+        <LoadingButton />
+      ) : (
+        <button onClick={handleMatcher}>Save</button>
+      )}
     </>
   );
 };

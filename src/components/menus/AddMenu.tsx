@@ -101,8 +101,8 @@ const MenuTable = ({
   }
   const firstMenu = menus[0];
   if (firstMenu == null) return <div></div>;
-  const start = (page - 1) * 3;
-  const end = start + 3;
+  const start = (page - 1) * 10;
+  const end = start + 10;
   const menuInPage = menus.slice(start, end);
   return (
     <div className="container py-2 text-sm sm:text-lg">
@@ -149,7 +149,7 @@ const MenuTable = ({
         </tbody>
       </table>
       <Pagination
-        pageCount={Math.ceil(menus.length / 3)}
+        pageCount={Math.ceil(menus.length / 10)}
         pageRangeDisplayed={10}
         marginPagesDisplayed={2}
         onPageChange={handlePageChange}

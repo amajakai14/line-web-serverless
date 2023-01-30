@@ -4,7 +4,17 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import type { TNavbar } from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { api } from "../../utils/api";
+
+const linkList: TNavbar = [
+  { uri: "#", text: "TODO1" },
+  { uri: "#", text: "TODO2" },
+  { uri: "#", text: "TODO3" },
+  { uri: "#", text: "TODO4" },
+  { uri: "#", text: "TODO5" },
+];
 
 const Home: NextPage = () => {
   return (
@@ -14,7 +24,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Restaurant Management" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main className="min-h-screen bg-slate-50">
+        <Navbar linkList={linkList} />
         <div className="px-4">
           <div>
             <p>Staff Page</p>

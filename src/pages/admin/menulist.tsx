@@ -9,8 +9,9 @@ import type { TNavbar } from "../../components/Navbar";
 import Navbar from "../../components/Navbar";
 
 const linkList: TNavbar = [
-  { uri: "#", text: "Add Course/Menu" },
-  { uri: "#", text: "manage course" },
+  { uri: "/", text: "Home" },
+  { uri: "/admin", text: "Admin" },
+  { uri: "/admin/courseonmenu", text: "manage course" },
 ];
 
 const MenuList: NextPage = () => {
@@ -38,7 +39,7 @@ export default MenuList;
 
 const AddMenuAndCourse = () => {
   const { data: sessionData, status } = useSession();
-  const [display, setDisplay] = useState(false);
+  const [displayCourse, setDisplayCourse] = useState(false);
   const router = useRouter();
   useEffect(() => {
     if (status == "unauthenticated") {
@@ -54,25 +55,29 @@ const AddMenuAndCourse = () => {
         <div className="flex justify-center text-sm sm:hidden">
           <button
             className={`rounded-l-md bg-slate-100 p-2 hover:bg-sky-300 ${
-              display ? "bg-slate-200" : "bg-sky-400"
+              displayCourse ? "bg-slate-200" : "bg-sky-400"
             }`}
-            onClick={() => setDisplay((val) => !val)}
+            onClick={() => setDisplayCourse((val) => !val)}
           >
-            Menu
+            <span className={`${displayCourse ? "invisible" : "visible"}`}>
+              Menu
+            </span>
           </button>
           <button
             className={`rounded-r-md bg-slate-100 p-2 hover:bg-sky-300 ${
-              !display ? "bg-slate-200" : "bg-sky-400"
+              !displayCourse ? "bg-slate-200" : "bg-sky-400"
             }`}
-            onClick={() => setDisplay((val) => !val)}
+            onClick={() => setDisplayCourse((val) => !val)}
           >
-            Course
+            <span className={`${displayCourse ? "visible" : "invisible"}`}>
+              Course
+            </span>
           </button>
         </div>
-        <div className={`${display ? "" : "hidden"} md:block`}>
+        <div className={`${!displayCourse ? "" : "hidden"} md:block`}>
           <AddMenu />
         </div>
-        <div className={`${display ? "" : "hidden"} md:block`}>
+        <div className={`${displayCourse ? "" : "hidden"} md:block`}>
           <AddCourse />
         </div>
       </div>

@@ -3,6 +3,16 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import type { TNavbar } from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
+
+const linkList: TNavbar = [
+  { uri: "/", text: "Home" },
+  { uri: "admin/menulist", text: "Add Course/Menu" },
+  { uri: "admin/courseonemenu", text: "manage course" },
+  { uri: "admin/staff", text: "manage staff" },
+  { uri: "admin/table", text: "manage table" },
+];
 
 const Home: NextPage = () => {
   return (
@@ -12,13 +22,10 @@ const Home: NextPage = () => {
         <meta name="description" content="Restaurant Management" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-center text-2xl text-white">Welcome</p>
-            <Index />
-          </div>
-        </div>
+      <main className="min-h-screen bg-slate-50">
+        <CheckAdminSession />
+        <Navbar linkList={linkList} />
+        <div className="container flex flex-col items-center justify-center gap-12 p-2 "></div>
       </main>
     </>
   );
@@ -26,12 +33,12 @@ const Home: NextPage = () => {
 
 export default Home;
 
-const Index = () => {
+const CheckAdminSession = () => {
   const { data: sessionData, status } = useSession();
   const router = useRouter();
   useEffect(() => {
     if (status == "unauthenticated") {
-      router.push("/index");
+      router.push("/");
     }
   }, [sessionData, status, router]);
   if (status === "loading") {
@@ -39,11 +46,7 @@ const Index = () => {
   }
 
   if (sessionData?.user?.role !== "ADMIN") {
-    router.push("/login");
+    router.push("/");
   }
-  return (
-    <>
-      <div>Hello {sessionData?.user?.name}</div>
-    </>
-  );
+  return <></>;
 };

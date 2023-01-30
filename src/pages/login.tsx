@@ -1,7 +1,9 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
+import { useEffect } from "react";
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
@@ -31,6 +33,12 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (sessionData) {
+      router.push("/");
+    }
+  }, [router, sessionData]);
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input

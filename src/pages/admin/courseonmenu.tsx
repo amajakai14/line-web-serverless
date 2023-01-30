@@ -4,7 +4,15 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import CourseMatchMenuTable from "../../components/courseonmenu/CourseMatchMenu";
+import type { TNavbar } from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { api } from "../../utils/api";
+
+const linkList: TNavbar = [
+  { uri: "/", text: "Home" },
+  { uri: "/admin", text: "Admin" },
+  { uri: "/admin/menulist", text: "Add Menu and Course" },
+];
 
 const Home: NextPage = () => {
   return (
@@ -14,8 +22,10 @@ const Home: NextPage = () => {
         <meta name="description" content="Restaurant Management" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className=" flex min-h-screen flex-col items-center justify-center">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+      <main className="min-h-screen bg-slate-50">
+        <Navbar linkList={linkList} />
+        <h1 className="p-2 text-center">Add/ Remove Menus from a course</h1>
+        <div className="flex flex-col items-center justify-center p-2">
           <div className="flex flex-col items-center gap-2">
             <CourseOnMenuRelation />
             <p className="text-center text-2xl text-white">Menu List</p>
@@ -35,7 +45,7 @@ const CourseOnMenuRelation = () => {
   const router = useRouter();
   useEffect(() => {
     if (status == "unauthenticated") {
-      router.push("/admin");
+      router.push("/");
     }
   }, [router, sessionData, status]);
   if (status === "loading" || fetchData.status === "loading") {

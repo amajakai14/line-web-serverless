@@ -3,14 +3,22 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Navbar, { TNavbar } from "../../components/Navbar";
 import StaffList from "../../components/staff/StaffList";
 import StaffRegisterForm from "../../components/staff/StaffRegisterform";
 import { api } from "../../utils/api";
+
 export type TStaff = {
   id: string;
   name: string | null;
   email: string | null;
 };
+
+const linkList: TNavbar = [
+  { uri: "/", text: "Home" },
+  { uri: "/admin", text: "Admin" },
+  { uri: "/admin/courseonmenu", text: "manage course" },
+];
 const Index: NextPage = () => {
   return (
     <>
@@ -19,7 +27,8 @@ const Index: NextPage = () => {
         <meta name="description" content="Restaurant Management" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className=" flex min-h-screen flex-col items-center justify-center">
+      <main className="min-h-screen bg-slate-50">
+        <Navbar linkList={linkList} />
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <div className="flex flex-col items-center gap-2">
             <Staff />
