@@ -6,16 +6,19 @@ import type { CreateMenuInput, MenuList } from "../../schema/menu.schema";
 import { menuType } from "../../schema/menu.schema";
 import { api } from "../../utils/api";
 import { isValidPrice } from "../../utils/input-validation";
+import LoadingButton from "../LoadingButton";
 
-const AddMenu = () => {
+const AddMenu: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const [menus, setMenus] = useState<MenuList[] | undefined>();
   const [page, setPage] = useState(1);
 
   const mutation = api.menu.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
     onSuccess: (data) => console.log(data),
   });
+
+  const fetchMenu = api.menu.get.useQuery();
+  const menus = fetchMenu.data?.result;
 
   const {
     register,
@@ -29,18 +32,17 @@ const AddMenu = () => {
       setErrorMessage("price should be a positive number");
       return;
     }
-    const { status, message, result } = await mutation.mutateAsync(data);
+    const { status } = await mutation.mutateAsync(data);
     if (status !== 201) {
-      setErrorMessage(message);
+      setErrorMessage("unable to create menu");
       return;
     }
-    setMenus(result);
-    console.log("api sending result", result);
+    fetchMenu.refetch();
   };
 
   return (
-    <>
-      <div className="radius flex flex-col items-center gap-2 border p-4">
+    <div className="container p-4">
+      <div className="flex flex-col items-center border p-4">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>
@@ -71,12 +73,15 @@ const AddMenu = () => {
             defaultValue={0}
             {...register("price", { required: false, valueAsNumber: true })}
           />
-
-          <input type="submit" className="rounded border py-1 px-4" />
+          {mutation.isLoading ? (
+            <LoadingButton />
+          ) : (
+            <input type="submit" className="rounded border py-1 px-4" />
+          )}
         </form>
       </div>
       {menus && <MenuTable page={page} menus={menus} setPage={setPage} />}
-    </>
+    </div>
   );
 };
 
@@ -100,40 +105,40 @@ const MenuTable = ({
   const end = start + 3;
   const menuInPage = menus.slice(start, end);
   return (
-    <>
-      <table className="border-collapse border-2 border-black">
+    <div className="container py-2 text-sm sm:text-lg">
+      <table>
         <thead>
           <tr className="text-left">
-            <th className="border-2 border-black px-2">Menu Name</th>
-            <th className="border-2 border-black px-2">Type</th>
-            <th className="border-2 border-black px-2">Price</th>
-            <th className="border-2 border-black px-2">Availability</th>
+            <th className="px-1">Menu Name</th>
+            <th className="px-1">Type</th>
+            <th className="px-1">Price</th>
+            <th className="px-1">Availability</th>
           </tr>
         </thead>
         <tbody>
           {menuInPage.map((menu) => {
             return (
-              <tr key={menu.id} className="px-2">
+              <tr key={menu.id} className="px-1">
                 <td
-                  className="border-2 border-black px-2 text-left"
+                  className="px-1 text-left"
                   key={`${menu.id}${menu.menu_name}`}
                 >
                   {menu.menu_name}
                 </td>
                 <td
-                  className="border-2 border-black px-2 text-left"
+                  className="px-1 text-left"
                   key={`${menu.id}${menu.menu_type}`}
                 >
                   {menu.menu_type}
                 </td>
                 <td
-                  className="border-2 border-black px-2 text-left"
+                  className="px-1 text-center"
                   key={`${menu.id}${menu.price}`}
                 >
                   {menu.price}
                 </td>
                 <td
-                  className="border-2 border-black px-2 text-left"
+                  className="px-1 text-center"
                   key={`${menu.id}${menu.available}`}
                 >
                   {menu.available ? "✔" : "✖"}
@@ -148,10 +153,10 @@ const MenuTable = ({
         pageRangeDisplayed={10}
         marginPagesDisplayed={2}
         onPageChange={handlePageChange}
-        containerClassName="flex flex-row justify-between gap-1"
+        containerClassName="flex text-sm flex-row justify-center gap-3"
         activeClassName="active"
         breakLabel="..."
       />
-    </>
+    </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Client, ConnectionConfig } from "pg";
 import * as statement from "./sqldata";
 
 executeSql();
@@ -8,19 +8,23 @@ async function executeSql() {
   await query(statement.removeCorp, connection);
   await query(statement.addCorp, connection);
   await query(statement.addTable, connection);
-  await end(connection);
+  end(connection);
   console.log("migration done");
 }
 const credentials = {
-  user: "postgres",
+  user: "lineserverdb",
   host: "localhost",
-  database: "nodedemo",
-  password: "yourpassword",
+  database: "linemenudb",
+  password: "lineserverpw",
   port: 5432,
 };
 
 async function connect() {
-  const client = new Client(credentials);
+  const config: ConnectionConfig = {
+    connectionString:
+      "postgresql://lineserverdb:lineserverpw@localhost:5432/linemenudb?schema=public",
+  };
+  const client = new Client(config);
   await client.connect();
   return client;
 }

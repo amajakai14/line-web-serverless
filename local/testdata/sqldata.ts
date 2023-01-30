@@ -1,17 +1,17 @@
 export const removeCorp = `
-DELETE FROM Corporation WHERE id = 'testcorp';
+DELETE FROM public."Corporation" WHERE id = 'testcorp';
 `;
 
 export const removeTable = `
-DELETE FROM Desk;
+DELETE FROM public."Desk";
 `;
 
 export const addCorp = `
-INSERT INTO Corporation (id, name) VALUES ('testcorp', 'Test Corporate');
+INSERT INTO public."Corporation" (id, name) VALUES ('testcorp', 'Test Corporate');
 `;
 
 export const addTable = `
-INSERT INTO Desk (table_name, is_occupied, corporation_id) 
+INSERT INTO public."Desk" (table_name, is_occupied, corporation_id) 
 VALUES 
     ('TS01', false, 'testcorp'),
     ('TS02', false, 'testcorp'),
