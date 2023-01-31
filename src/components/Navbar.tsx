@@ -55,12 +55,12 @@ const HamburgerIcon: React.FC<{
 }) => {
   const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-black transition ease transform duration-300`;
   return (
-    <div>
+    <div className="flex w-full items-end justify-end">
       <button
         onClick={() => {
           setIsOpen(!isOpen);
         }}
-        className="group flex h-12 w-12 flex-col items-start justify-start rounded  border-black"
+        className="justify-top group flex h-12 w-12 flex-col items-center rounded border-black  align-middle"
       >
         <div
           className={`${genericHamburgerLine} ${
@@ -95,18 +95,10 @@ const HamburgerMenu: React.FC<{ linkList: TNavbar }> = ({
   const { data: sessionData } = useSession();
 
   return (
-    <nav
-      className="w-full bg-violet-500 px-4 pt-2 md:hidden"
-      onClick={() => {
-        if (isOpen) {
-          setIsOpen((val) => !val);
-        }
-      }}
-    >
-      <HamburgerIcon isOpen={isOpen} setIsOpen={setIsOpen} />
-      {/* <div
-        className={`w-full transition-all duration-500 ease-in-out ${dynamic}`}
-      > */}
+    <nav className="w-full bg-violet-500 px-4 pt-2 md:hidden">
+      <div className="w-full">
+        <HamburgerIcon isOpen={isOpen} setIsOpen={setIsOpen} />
+      </div>
       <div
         className={`fixed top-0 left-0 z-30 h-full w-64 transform overflow-auto bg-violet-300  transition-all duration-300 ease-in-out ${
           isOpen ? "translate-x-0 " : "-translate-x-full"
