@@ -10,4 +10,4 @@ jobs:
         run: |
           curl --request POST \
           --url 'https://kritsakorn.me/api/cron' \
-          --header 'Authorization: Bearer "${{ secrets.CRON_SECRET }}"
+          --header 'Authorization: Bearer "${{ secrets.CRON_SECRET }}"'
