@@ -8,6 +8,7 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       const { authorization } = req.headers;
+      console.log("header ", authorization);
 
       if (authorization === `Bearer ${env.CRON_SECRET}` && prisma) {
         await prisma.channel.updateMany({
@@ -16,6 +17,7 @@ export default async function handler(
         });
         res.status(200).json({ success: true });
       }
+      res.status(403).json({ success: false});
     } catch (err: any) {
       res.status(500).json({ success: false, message: err.message });
     }
