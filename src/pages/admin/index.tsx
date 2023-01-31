@@ -9,7 +9,7 @@ import Navbar from "../../components/Navbar";
 const linkList: TNavbar = [
   { uri: "/", text: "Home" },
   { uri: "admin/menulist", text: "Add Course/Menu" },
-  { uri: "admin/courseonemenu", text: "manage course" },
+  { uri: "admin/courseonmenu", text: "manage course" },
   { uri: "admin/staff", text: "manage staff" },
   { uri: "admin/table", text: "manage table" },
 ];

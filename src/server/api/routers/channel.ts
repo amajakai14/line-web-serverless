@@ -1,12 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import * as crypto from "crypto";
+import z from "zod";
 import {
   createChannelSchema,
   updateChannelSchema,
 } from "../../../schema/channel.schema";
 import { getTableSchema } from "../../../schema/table.schema";
 import { addMinutes } from "../../../utils/add-minutes";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const channelRouter = createTRPCRouter({
   register: protectedProcedure
@@ -101,6 +102,23 @@ export const channelRouter = createTRPCRouter({
       });
       return {
         status: 201,
+        result,
+      };
+    }),
+
+  getChannel: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.prisma.channel.findFirst({
+        where: { id: input },
+      });
+      if (!result) {
+        return {
+          status: 404,
+        };
+      }
+      return {
+        status: 200,
         result,
       };
     }),

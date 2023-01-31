@@ -51,8 +51,8 @@ const AddMenuAndCourse = () => {
   }
   return (
     <>
-      <div className="sm:flex sm:justify-center sm:gap-2">
-        <div className="flex justify-center text-sm sm:hidden">
+      <div className="md:flex md:justify-center md:gap-2">
+        <div className="flex justify-center text-sm md:hidden">
           <button
             className={`rounded-l-md bg-slate-100 p-2 hover:bg-sky-300 ${
               displayCourse ? "bg-slate-200" : "bg-sky-400"

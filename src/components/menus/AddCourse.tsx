@@ -33,19 +33,19 @@ const AddCourse = () => {
       setErrorMessage(message);
       return;
     }
-    fetchMenu.refetch;
+    fetchMenu.refetch();
   };
 
   return (
-    <div className="container p-4">
-      <div className="flex flex-col items-center border p-4">
+    <div className="w-full p-4">
+      <div className="flex flex-col items-center border py-4">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>
           )}
           <label>Course name</label>
           <input
-            className="rounded border py-1 px-4"
+            className="rounded border py-1 pr-4"
             type="text"
             {...register("course_name", { required: true })}
           />
@@ -92,7 +92,7 @@ const CourseTable = ({ courses }: { courses: CourseList[] }) => {
   const firstMenu = courses[0];
   if (firstMenu == null) return <div></div>;
   return (
-    <div className="container py-2 text-sm sm:text-lg">
+    <div className="flex w-full justify-between py-2 text-sm sm:text-lg">
       <table>
         <thead>
           <tr className="text-left">

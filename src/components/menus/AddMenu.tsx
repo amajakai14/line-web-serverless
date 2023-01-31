@@ -41,8 +41,8 @@ const AddMenu: React.FC = () => {
   };
 
   return (
-    <div className="container p-4">
-      <div className="flex flex-col items-center border p-4">
+    <div className="w-full py-3">
+      <div className="flex flex-col items-center border py-3">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>

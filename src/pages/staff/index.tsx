@@ -2,14 +2,16 @@ import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import QRCode from "qrcode.react";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import type { TNavbar } from "../../components/Navbar";
 import Navbar from "../../components/Navbar";
+import { clientEnv } from "../../env/schema.mjs";
 import { api } from "../../utils/api";
 
 const linkList: TNavbar = [
-  { uri: "#", text: "TODO1" },
+  { uri: "/", text: "Home" },
   { uri: "#", text: "TODO2" },
   { uri: "#", text: "TODO3" },
   { uri: "#", text: "TODO4" },
@@ -111,6 +113,7 @@ const TableDetail = ({
   table: TTableList;
   setTableId: Dispatch<SetStateAction<TTableList | undefined>>;
 }) => {
+  const baseUrl = clientEnv.NEXT_PUBLIC_BASE_URL;
   const { table_id, table_name } = table;
   const fetchData = api.desk.getTable.useQuery({ table_id });
   const fetchCourseData = api.course.get.useQuery();
@@ -145,6 +148,12 @@ const TableDetail = ({
   return (
     <div>
       <SetZero setTableId={setTableId} />
+      {inUseChannel && (
+        <QRCode
+          value={`${baseUrl}/service/${inUseChannel.id}`}
+          renderAs="canvas"
+        />
+      )}
       <div className="flex flex-row justify-center">
         <div>
           <div className="flex flex-row justify-center gap-2">
