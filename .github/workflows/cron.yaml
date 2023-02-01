@@ -10,4 +10,4 @@ jobs:
         run: |
           curl --request POST \
           --url 'https://line-web-serverless-857x.vercel.app/api/cron' \
-          --header "Authorization: Bearer ${{ env.CRON_TOKEN}}"
+          --header "Authorization: Bearer ${{ vars.CRON_TOKEN}}"
