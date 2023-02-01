@@ -2,8 +2,6 @@ name: hourly-cron
 on:
   schedule:
     - cron: "* * * * *"
-env:
-  SOME_SECRET: ${{ secrets.CRON_SECRET }}
 jobs:
   cron:
     runs-on: ubuntu-latest
