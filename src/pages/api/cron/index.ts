@@ -14,24 +14,6 @@ export default async function handler(
 
   try {
     const { authorization } = req.headers;
-    if (authorization === `Bearer ${env.CRON_SECRET}`) {
-      res
-        .status(200)
-        .json({
-          success: false,
-          message: "matched",
-          log: `header: ${authorization}, secret: ${env.CRON_SECRET}`,
-        });
-      return;
-    }
-    res
-      .status(200)
-      .json({
-        success: false,
-        message: "unmatched",
-        log: `header: ${authorization}, secret: ${env.CRON_SECRET}`,
-      });
-    return;
     if (authorization !== `Bearer ${env.CRON_SECRET}`) {
       res.status(403).json({ success: false });
       return;
