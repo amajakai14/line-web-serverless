@@ -8,5 +8,7 @@ jobs:
     steps:
       - name: Call our API route
         run: |
-          echo $MYSECRET
-        env: ${{ secrets.CRON_SECRET }}
+          curl --request POST \
+          --url 'https://line-web-serverless-857x.vercel.app/api/cron' \
+          --header 'Authorization: Bearer ${{ secrets.CRON_SECRET }}' \
+          -w '\n Response code: %{http_code}\n'
