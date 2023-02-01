@@ -3,8 +3,10 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import type { TNavbar } from "../components/Navbar";
 import Navbar from "../components/Navbar";
+import { api } from "../utils/api";
 
 const linkList: TNavbar = [
   { uri: "#", text: "Products" },
@@ -15,8 +17,10 @@ const linkList: TNavbar = [
 ];
 
 const Home: NextPage = () => {
+  const [file, setFile] = useState<any>(null);
   let availableMenu: TNavbar;
   const session = useSession();
+  const mutation = api.menu.uploadImage.useMutation();
   if (session.status === "loading") return <div>Loading...</div>;
   if (session.data?.user) {
     availableMenu = linkList.filter((link) => link.text !== "Login");
@@ -25,6 +29,29 @@ const Home: NextPage = () => {
       (link) => link.text !== "Staff" && link.text !== "Admin"
     );
   }
+
+  const onFileChange = (e: React.FormEvent<HTMLFormElement>) => {
+    setFile(e.currentTarget.files?.[0]);
+  };
+
+  const uploadImage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!file) {
+      console.log("file not found ...");
+      return;
+    }
+    const url = await createPresignUrl();
+    const result = await fetch(url, {
+      method: "PUT",
+      body: file,
+    });
+    const x = await result.json();
+    console.log(x);
+  };
+
+  const createPresignUrl = async () => {
+    return await mutation.mutateAsync();
+  };
 
   return (
     <>
@@ -35,6 +62,11 @@ const Home: NextPage = () => {
       </Head>
       <main className="min-h-screen bg-slate-50">
         <Navbar linkList={availableMenu} />
+        <form onSubmit={uploadImage}>
+          <div>Upload Image</div>
+          <input onChange={(e) => onFileChange(e)} type="file" />
+          <button type="submit">upload file</button>
+        </form>
         <div className="px-4 pt-2 md:px-10 md:pt-10">
           <FirstImpression />
         </div>
