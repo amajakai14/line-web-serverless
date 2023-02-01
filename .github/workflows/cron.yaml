@@ -9,5 +9,6 @@ jobs:
       - name: Call our API route
         run: |
           curl --request POST \
-          --url 'https://kritsakorn.me/api/cron' \
-          --header 'Authorization: Bearer "${{ secrets.CRON_SECRET }}"'
+          --url 'https://line-web-serverless-857x.vercel.app/api/cron' \
+          --header 'Authorization: Bearer "${{ secrets.CRON_SECRET }}"' \
+          -w '\n Response code: %{http_code}\n'
