@@ -14,6 +14,8 @@ export default async function handler(
 
   try {
     const { authorization } = req.headers;
+    res.status(200).json({ success: false, message: authorization });
+    return;
     if (authorization !== `Bearer ${env.CRON_SECRET}`) {
       res.status(403).json({ success: false });
       return;
