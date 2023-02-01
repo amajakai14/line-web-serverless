@@ -1,7 +1,7 @@
 name: hourly-cron
 on:
   schedule:
-    - cron: "* * * * *"
+    - cron: "0 * * * *"
 jobs:
   cron:
     runs-on: ubuntu-latest
@@ -10,4 +10,4 @@ jobs:
         run: |
           curl --request POST \
           --url 'https://line-web-serverless-857x.vercel.app/api/cron' \
-          --header "Authorization: Bearer ${{ vars.CRON_TOKEN}}"
+          --header "Authorization: Bearer e0ebb420-9c53-4ccd-b2f1-607e51291f9b"
