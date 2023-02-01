@@ -7,7 +7,6 @@ import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
 import type { TNavbar } from "../../components/Navbar";
 import Navbar from "../../components/Navbar";
-import { clientEnv } from "../../env/schema.mjs";
 import { api } from "../../utils/api";
 
 const linkList: TNavbar = [
@@ -113,10 +112,10 @@ const TableDetail = ({
   table: TTableList;
   setTableId: Dispatch<SetStateAction<TTableList | undefined>>;
 }) => {
-  const baseUrl = clientEnv.NEXT_PUBLIC_BASE_URL;
   const { table_id, table_name } = table;
   const fetchData = api.desk.getTable.useQuery({ table_id });
   const fetchCourseData = api.course.get.useQuery();
+  const router = useRouter();
   if (fetchData.status === "loading" || fetchCourseData.status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;
   }
@@ -144,36 +143,35 @@ const TableDetail = ({
         <CreateChannel table_id={table_id} courses={coursesDetail} />
       </div>
     );
-  const testDate = new Date().toLocaleTimeString();
+  const baseUrl = window.location.origin;
   return (
     <div>
-      <SetZero setTableId={setTableId} />
-      {inUseChannel && (
-        <QRCode
-          value={`${baseUrl}/service/${inUseChannel.id}`}
-          renderAs="canvas"
-        />
-      )}
-      <div className="flex flex-row justify-center">
-        <div>
-          <div className="flex flex-row justify-center gap-2">
-            <div className="rounded-md border-2 bg-slate-400 p-4">{`Start: ${testDate}  End: ${testDate}`}</div>
-            <div className="rounded-md border-2 bg-red-300 p-4">Status</div>
-          </div>
-          <div className="flex flex-col justify-center">
-            <div className="border-2 bg-green-300 p-4 text-center">Course</div>
-            <div className="border-2 bg-slate-50">
-              <p className="border-2 border-gray-50">
-                Type Table Code to Delete current channel
-              </p>
-              <input
-                type="text"
-                className="w-full border-2 bg-white"
-                placeholder={table_name}
-              />
-              <div className="border-2 bg-red-600 text-center">
-                <button>Close Channel</button>
-              </div>
+      <div>
+        <div className="flex flex-row justify-center gap-2">
+          <div className="rounded-md border-2 bg-slate-400 p-4">{`Start: ${inUseChannel.time_start.toLocaleTimeString()}  End: ${inUseChannel.time_end.toLocaleTimeString()}`}</div>
+          <div className="rounded-md border-2 bg-red-300 p-4">ONLINE</div>
+        </div>
+        <SetZero setTableId={setTableId} />
+        <div className="flex justify-center">
+          <QRCode
+            value={`${baseUrl}/service/${inUseChannel.id}`}
+            renderAs="canvas"
+            size={300}
+          />
+        </div>
+        <div className="flex flex-col justify-center">
+          <div className="border-2 bg-green-300 p-4 text-center">Course</div>
+          <div className="border-2 bg-slate-50">
+            <p className="border-2 border-gray-50">
+              Type Table Code to Delete current channel
+            </p>
+            <input
+              type="text"
+              className="w-full border-2 bg-white"
+              placeholder={table_name}
+            />
+            <div className="border-2 bg-red-600 text-center">
+              <button>Close Channel</button>
             </div>
           </div>
         </div>

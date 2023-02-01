@@ -26,7 +26,7 @@ export default async function handler(
 
     const data = await prisma.channel.updateMany({
       data: { status: "EXPIRED" },
-      where: { time_end: { lte: new Date() } },
+      where: { status: "ONLINE", time_end: { lte: new Date() } },
     });
     res.status(200).json({
       success: true,

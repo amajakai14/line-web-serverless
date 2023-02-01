@@ -136,8 +136,6 @@ model Channel {
     time_start  DateTime @default(now())
     time_end    DateTime
     orders      Order[]
-
-    @@unique([user_id, table_id])
 }
 
 model Order {
