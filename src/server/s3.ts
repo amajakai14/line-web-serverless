@@ -4,7 +4,10 @@ import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "../env/server.mjs";
 
-export const getObjectContent = async () => {
+export const getObjectContent = async (
+  customer_id: string,
+  menu_id: number
+) => {
   const s3Client = new S3Client({
     credentials: {
       accessKeyId: env.S3_ACCESS_KEY,
@@ -14,7 +17,7 @@ export const getObjectContent = async () => {
   });
   const input: GetObjectCommandInput = {
     Bucket: env.S3_BUCKET,
-    Key: "ikuchan.jpeg",
+    Key: `${customer_id}/${menu_id}`,
   };
   const command = new GetObjectCommand(input);
   const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
@@ -24,11 +27,10 @@ export const getObjectContent = async () => {
 };
 
 export const putObjectPresignedUrl = async (
-  customer_id: number,
-  file_id: number,
-  file_name: string
+  customer_id: string,
+  menu_id: number
 ) => {
-  const key = `${customer_id}/${file_id}/${file_name}`;
+  const key = `${customer_id}/${menu_id}`;
   const s3Client = new S3Client({
     credentials: {
       accessKeyId: env.S3_ACCESS_KEY,
@@ -36,13 +38,14 @@ export const putObjectPresignedUrl = async (
     },
     region: "ap-northeast-1",
   });
-  const LIMIT_5MB = 5e6;
+
+  const LIMIT_SIZE = 2e7; // 20MB
   const url = await createPresignedPost(s3Client, {
     Bucket: env.S3_BUCKET,
     Key: key,
     Conditions: [
       ["starts-with", "$Content-Type", "image/"],
-      ["content-length-range", 0, LIMIT_5MB],
+      ["content-length-range", 0, LIMIT_SIZE],
     ],
     Expires: 30,
   });

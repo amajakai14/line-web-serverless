@@ -95,6 +95,7 @@ model Menu {
     menu_type      String
     price          Int            @default(0)
     available      Boolean        @default(true)
+    hasImage       Boolean        @default(false)
     created_at     DateTime       @default(now())
     updated_at     DateTime?
     corporation    Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
