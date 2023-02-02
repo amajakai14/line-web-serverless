@@ -1,20 +1,17 @@
-# Create T3 App
+# CRM Project
+## What is about this project
+Getting into a Yakiniku Buffet restaurant in Japan and Felt great about their interactive order system and CRM. So this project is trying to re-engineer that business process.
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
-
-## What's next? How do I make an app with this?
-
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Stack on This Project
+### T3 Stack
+What is [T3 Stack](https://create.t3.gg/) ?
+the scaffolding that suit for monopolith web application wraping the below technologies together.
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
 - [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
-
-## Learn More
 
 To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
@@ -23,6 +20,15 @@ To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the fo
 
 You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-## How do I deploy this?
+### Other Integrated Technology
+- Vercel for Web deplotment
+- GitHub (workflows for schedule task)
+- S3 for Image Storage
+- Supabase for Database 
+- (Considering) Upstash for caching
+- (TODO) Line Loging for interactive user experience
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## Plan on this Project
+### Store Management and CRM
+- An interact web application that users can order menu via their phone and also see what have been list in the shared cart their friend put in
+- A Management and Analysis System for Keep track any record and do report Analysis
