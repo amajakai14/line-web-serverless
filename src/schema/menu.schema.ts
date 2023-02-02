@@ -6,6 +6,7 @@ export const createMenuSchema = z.object({
   menu_name: z.string(),
   menu_type: z.enum(menuType),
   price: z.number().nonnegative(),
+  upload_file: z.boolean(),
 });
 
 export type CreateMenuInput = z.TypeOf<typeof createMenuSchema>;

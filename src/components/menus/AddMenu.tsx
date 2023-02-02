@@ -1,3 +1,4 @@
+import { PresignedPost } from "@aws-sdk/s3-presigned-post/dist-types/createPresignedPost";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -11,6 +12,8 @@ import LoadingButton from "../LoadingButton";
 const AddMenu: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [page, setPage] = useState(1);
+  const [file, setFile] = useState<File | undefined>(undefined);
+  const [preview, setPreview] = useState<any>(undefined);
 
   const mutation = api.menu.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
@@ -24,10 +27,12 @@ const AddMenu: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<CreateMenuInput>();
 
   const onSubmit: SubmitHandler<CreateMenuInput> = async (data) => {
     setErrorMessage(undefined);
+    return;
     if (!isValidPrice(data.price)) {
       setErrorMessage("price should be a positive number");
       return;
@@ -38,6 +43,63 @@ const AddMenu: React.FC = () => {
       return;
     }
     fetchMenu.refetch();
+  };
+
+  const onFileChange = (e: React.FormEvent<HTMLFormElement>) => {
+    const file: File | undefined = e.currentTarget.files?.[0];
+    if (!file) {
+      setFile(undefined);
+      setValue("upload_file", false);
+      setPreview(undefined);
+      return;
+    }
+    if (!validateFile(file)) {
+      setErrorMessage("upload file cannot be over then 5 MB.");
+      setFile(undefined);
+      setValue("upload_file", false);
+      setPreview(undefined);
+      return;
+    }
+    setFile(file);
+    setValue("upload_file", true);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (!e.target) {
+        setPreview(undefined);
+        console.log("reader target not found");
+      } else setPreview(e.target.result);
+    };
+  };
+
+  function validateFile(file: File) {
+    if (file.size > 5e5) return false;
+    return true;
+  }
+
+  const uploadImage = async (
+    e: React.FormEvent<HTMLFormElement>,
+    presignedUri: PresignedPost
+  ) => {
+    e.preventDefault();
+    if (!file) {
+      console.log("file not found ...");
+      return;
+    }
+    const { url, fields } = presignedUri;
+    const data = {
+      ...(fields as any),
+      "Content-type": file.type,
+      file,
+    };
+    const formData = new FormData();
+    for (const name in data) {
+      formData.append(name, data[name]);
+    }
+    const result = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+    console.log(result);
   };
 
   return (
@@ -73,11 +135,17 @@ const AddMenu: React.FC = () => {
             defaultValue={0}
             {...register("price", { required: false, valueAsNumber: true })}
           />
+          <input
+            accept="image/*"
+            onChange={(e) => onFileChange(e)}
+            type="file"
+          />
           {mutation.isLoading ? (
             <LoadingButton />
           ) : (
             <input type="submit" className="rounded border py-1 px-4" />
           )}
+          {preview && <img src={preview} alt="preview image" />}
         </form>
       </div>
       {menus && <MenuTable page={page} menus={menus} setPage={setPage} />}

@@ -23,6 +23,7 @@ export const serverSchema = z.object({
   CRON_SECRET: z.string(),
   S3_ACCESS_KEY: z.string(),
   S3_SECRET_KEY: z.string(),
+  S3_BUCKET: z.string(),
 });
 
 /**

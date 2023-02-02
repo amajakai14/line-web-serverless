@@ -1,8 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createMenuSchema, menuListSchema } from "../../../schema/menu.schema";
 import { isValidPrice } from "../../../utils/input-validation";
-import { getObjectContent, putObjectPresignedUrl } from "../../s3";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const menuRouter = createTRPCRouter({
   register: protectedProcedure
@@ -26,14 +25,6 @@ export const menuRouter = createTRPCRouter({
       });
       return result ? { status: 201 } : { status: 401 };
     }),
-
-  getImage: publicProcedure.query(async ({ ctx }) => {
-    return await getObjectContent();
-  }),
-
-  uploadImage: publicProcedure.mutation(async ({ ctx }) => {
-    return await putObjectPresignedUrl();
-  }),
 
   get: protectedProcedure.query(async ({ ctx }) => {
     const { corporation_id } = ctx.session.user;
