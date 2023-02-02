@@ -64,8 +64,10 @@ const FirstImpression: React.FC = () => {
               src={
                 "https://storage.googleapis.com/studio-design-asset-files/projects/9YWyeXebWM/s-886x1748_v-fms_webp_ba47268b-45d4-4007-8443-315243957c4a_middle.webp"
               }
-              fill={true}
-              className="object-contain pt-4 pb-4 sm:py-0"
+              width={300}
+              height={600}
+              priority={true}
+              className="h-auto w-auto object-contain pt-4 pb-4 sm:py-0"
             />
           </div>
         </div>

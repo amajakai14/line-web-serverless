@@ -1,8 +1,14 @@
+import Image from "next/image";
 import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import Pagination from "react-paginate";
-import type { CreateMenuInput, MenuList } from "../../schema/menu.schema";
+import { uploadImage } from "../../s3Client/upload.image";
+import type {
+  CreateMenuInput,
+  MenuList,
+  UploadImageInput,
+} from "../../schema/menu.schema";
 import { menuType } from "../../schema/menu.schema";
 import { api } from "../../utils/api";
 import { isValidPrice } from "../../utils/input-validation";
@@ -11,10 +17,16 @@ import LoadingButton from "../LoadingButton";
 const AddMenu: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [page, setPage] = useState(1);
+  const [file, setFile] = useState<File | undefined>(undefined);
+  const [preview, setPreview] = useState<any>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   const mutation = api.menu.register.useMutation({
     onError: (e) => setErrorMessage(e.message),
-    onSuccess: (data) => console.log(data),
+    onSuccess: () => {
+      setErrorMessage(undefined);
+      reset();
+    },
   });
 
   const fetchMenu = api.menu.get.useQuery();
@@ -24,21 +36,60 @@ const AddMenu: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<CreateMenuInput>();
 
   const onSubmit: SubmitHandler<CreateMenuInput> = async (data) => {
+    setIsLoading(true);
     setErrorMessage(undefined);
     if (!isValidPrice(data.price)) {
       setErrorMessage("price should be a positive number");
       return;
     }
-    const { status } = await mutation.mutateAsync(data);
-    if (status !== 201) {
-      setErrorMessage("unable to create menu");
-      return;
-    }
+    const presigned = await mutation.mutateAsync(data);
+    if (!file || !presigned) return;
+    const result = await uploadImage(file, presigned);
+    if (!result) setErrorMessage("unable to upload image");
+    setIsLoading(false);
     fetchMenu.refetch();
   };
+
+  const onFileChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const file: File | undefined = e.currentTarget.files?.[0];
+    if (!file) {
+      reset();
+      return;
+    }
+    if (!validateFile(file)) {
+      reset();
+      setErrorMessage("upload file cannot be over then 5 MB.");
+      return;
+    }
+    const fileExtension = file.name.split(".").pop();
+    if (!fileExtension) {
+      reset();
+      setErrorMessage("file extension not found");
+      return;
+    }
+    setErrorMessage(undefined);
+
+    setFile(file);
+    setValue("upload_file", true);
+    setPreview(URL.createObjectURL(file));
+    return () => URL.revokeObjectURL(file.name);
+  };
+
+  function validateFile(file: File) {
+    if (file.size > 5e10) return false;
+    return true;
+  }
+
+  function reset() {
+    setErrorMessage(undefined);
+    setFile(undefined);
+    setValue("upload_file", false);
+    setPreview(undefined);
+  }
 
   return (
     <div className="w-full py-3">
@@ -73,7 +124,37 @@ const AddMenu: React.FC = () => {
             defaultValue={0}
             {...register("price", { required: false, valueAsNumber: true })}
           />
-          {mutation.isLoading ? (
+          <div>
+            {mutation.isLoading || isLoading ? (
+              <div></div>
+            ) : (
+              <>
+                <input
+                  accept="image/*"
+                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                    onFileChange(e)
+                  }
+                  //when cancel button is clicked, the file input will not trigger onChange event
+                  //so we need to set the value to false
+                  onClick={(e) => {
+                    reset();
+                  }}
+                  type="file"
+                />
+              </>
+            )}
+            {preview && (
+              <Image
+                src={preview}
+                alt="preview image"
+                width={100}
+                height={100}
+                id="preview"
+                className="h-32 w-40"
+              />
+            )}
+          </div>
+          {mutation.isLoading || isLoading ? (
             <LoadingButton />
           ) : (
             <input type="submit" className="rounded border py-1 px-4" />
@@ -143,6 +224,19 @@ const MenuTable = ({
                 >
                   {menu.available ? "✔" : "✖"}
                 </td>
+                <td className="px-1 text-center">
+                  {menu.url ? (
+                    <Image
+                      src={menu.url}
+                      alt="menu image"
+                      height={50}
+                      width={100}
+                      className="h-12 w-24"
+                    />
+                  ) : (
+                    <AddImage id={menu.id} />
+                  )}
+                </td>
               </tr>
             );
           })}
@@ -157,6 +251,104 @@ const MenuTable = ({
         activeClassName="active"
         breakLabel="..."
       />
+    </div>
+  );
+};
+
+const AddImage = ({ id }: { id: number }) => {
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [file, setFile] = useState<File | undefined>(undefined);
+  const [preview, setPreview] = useState<any>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
+  const { handleSubmit } = useForm<UploadImageInput>();
+  function validateFile(file: File) {
+    if (file.size > 5e10) return false;
+    return true;
+  }
+
+  function reset() {
+    setErrorMessage(undefined);
+    setFile(undefined);
+    setPreview(undefined);
+  }
+
+  const mutation = api.menu.uploadImage.useMutation({
+    onError: (e) => setErrorMessage(e.message),
+    onSuccess: () => {
+      setErrorMessage(undefined);
+      reset();
+    },
+  });
+
+  const onSubmit: SubmitHandler<UploadImageInput> = async () => {
+    setIsLoading(true);
+    setErrorMessage(undefined);
+    const presigned = await mutation.mutateAsync({ id });
+    if (!file || !presigned) return;
+    const result = await uploadImage(file, presigned);
+    if (!result) setErrorMessage("unable to upload image");
+    setIsLoading(false);
+  };
+  const onFileChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const file: File | undefined = e.currentTarget.files?.[0];
+    if (!file) {
+      reset();
+      return;
+    }
+    if (!validateFile(file)) {
+      reset();
+      setErrorMessage("upload file cannot be over then 5 MB.");
+      return;
+    }
+    const fileExtension = file.name.split(".").pop();
+    if (!fileExtension) {
+      reset();
+      setErrorMessage("file extension not found");
+      return;
+    }
+    setErrorMessage(undefined);
+
+    setFile(file);
+    setPreview(URL.createObjectURL(file));
+    return () => URL.revokeObjectURL(file.name);
+  };
+  return (
+    <div className="py-3">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="block py-1">
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          <label htmlFor={`file-upload-id${id}`}>
+            <input
+              id={`file-upload-id${id}`}
+              accept="image/*"
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                onFileChange(e)
+              }
+              onClick={(e) => {
+                reset();
+              }}
+              type="file"
+            />
+          </label>
+        </div>
+        <div className="py-1 text-start">
+          {mutation.isLoading || isLoading ? (
+            <LoadingButton />
+          ) : (
+            <input type="submit" className="rounded border py-1 px-4" />
+          )}
+        </div>
+      </form>
+      {preview && (
+        <Image
+          src={preview}
+          alt="preview image"
+          width={100}
+          height={100}
+          id="preview"
+          className="h-32 w-40"
+        />
+      )}
     </div>
   );
 };

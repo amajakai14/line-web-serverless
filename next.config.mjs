@@ -15,6 +15,12 @@ const config = {
   },
   images: {
     domains: ["storage.googleapis.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.amazonaws.com",
+      },
+    ],
   },
 };
 export default config;
