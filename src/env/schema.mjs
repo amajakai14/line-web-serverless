@@ -24,6 +24,7 @@ export const serverSchema = z.object({
   S3_ACCESS_KEY: z.string(),
   S3_SECRET_KEY: z.string(),
   S3_BUCKET: z.string(),
+  CLOUDFRONT_URL: z.string().url(),
 });
 
 /**
@@ -32,7 +33,6 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  // NEXT_PUBLIC_CLIENTVAR: z.string(),
   NEXT_PUBLIC_BASE_URL: z.string(),
 });
 
