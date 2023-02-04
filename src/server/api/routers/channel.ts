@@ -46,20 +46,27 @@ export const channelRouter = createTRPCRouter({
         timelimit == null
           ? addMinutes(time_start, defaultTime)
           : addMinutes(time_start, timelimit);
-      const result = await ctx.prisma.channel.create({
-        data: {
-          id,
-          table_id,
-          course_name: course.course_name,
-          user_id: 1,
-          status: "ONLINE",
-          time_start,
-          time_end,
-        },
-      });
+
+      await ctx.prisma.$transaction([
+        ctx.prisma.channel.create({
+          data: {
+            id,
+            table_id,
+            course_name: course.course_name,
+            user_id: 1,
+            status: "ONLINE",
+            time_start,
+            time_end,
+          },
+        }),
+        ctx.prisma.desk.update({
+          where: { id: table_id },
+          data: { is_occupied: true },
+        }),
+      ]);
+
       return {
         status: 201,
-        result,
       };
     }),
 
