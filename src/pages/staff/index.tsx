@@ -90,7 +90,12 @@ const TableList = () => {
           {tableList &&
             tableList.map((staff) => (
               <li
-                className="rounded-2xl border-2 border-emerald-100 bg-emerald-200 py-5 text-center hover:bg-emerald-300 active:bg-emerald-400"
+                className={`rounded-2xl border-2 
+                ${
+                  staff.is_occupied
+                    ? "border-red-100 bg-red-200 py-5 text-center hover:bg-red-300 active:bg-red-400"
+                    : "border-emerald-100 bg-emerald-200 py-5 text-center hover:bg-emerald-300 active:bg-emerald-400"
+                }`}
                 key={staff.id}
                 onClick={() => handleGetTableDetail(staff.id, staff.table_name)}
                 value={staff.id}
@@ -115,20 +120,15 @@ const TableDetail = ({
   const { table_id, table_name } = table;
   const fetchData = api.desk.getTable.useQuery({ table_id });
   const fetchCourseData = api.course.get.useQuery();
-  const router = useRouter();
+  const [courseFetch, setCourseFetch] = useState(false);
+  useEffect(() => {
+    fetchData.refetch();
+  }, [courseFetch]);
   if (fetchData.status === "loading" || fetchCourseData.status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;
   }
-  let tableDetail;
-  if (fetchData.status === "error") {
-    tableDetail = undefined;
-  }
-  let coursesDetail;
-  if (fetchCourseData.status === "error") {
-    coursesDetail = undefined;
-  }
-  coursesDetail = fetchCourseData.data?.result;
-  tableDetail = fetchData.data?.result;
+  const coursesDetail = fetchCourseData.data?.result;
+  const tableDetail = fetchData.data?.result;
   const inUseChannel = tableDetail?.filter(
     (table) => table.status === "ONLINE"
   )[0];
@@ -140,7 +140,12 @@ const TableDetail = ({
       <div>
         <SetZero setTableId={setTableId} />
         <ChannelHistory tableDetail={pastChannel} />
-        <CreateChannel table_id={table_id} courses={coursesDetail} />
+        <CreateChannel
+          table_id={table_id}
+          courses={coursesDetail}
+          courseFetch={courseFetch}
+          setCourseFetch={setCourseFetch}
+        />
       </div>
     );
   const baseUrl = window.location.origin;
@@ -223,22 +228,31 @@ const SetZero = ({
 const CreateChannel = ({
   table_id,
   courses,
+  courseFetch,
+  setCourseFetch,
 }: {
   table_id: number;
   courses:
     | { id: number; course_name: string; course_timelimit: number }[]
     | undefined;
+  courseFetch: boolean;
+  setCourseFetch: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [courseId, setCourseId] = useState<number | undefined>(undefined);
   const mutation = api.channel.register.useMutation({
     onError: (error) => console.error(error),
     onSuccess: (data) => console.log(data),
   });
-  const handleCreateChannel = () => {
-    if (courseId) {
-      mutation.mutateAsync({ table_id, course_id: courseId });
+  const handleCreateChannel = async () => {
+    if (!courseId) {
+      return;
     }
-    console.log("course Id is undefined");
+
+    const created = await mutation.mutateAsync({
+      table_id,
+      course_id: courseId,
+    });
+    created.status === 201 && setCourseFetch(!courseFetch);
   };
 
   const handleCourseSelect = (e: React.MouseEvent<HTMLLIElement>) => {
