@@ -13,6 +13,7 @@ const Navbar: React.FC<{ linkList: TNavbar }> = ({
 }: {
   linkList: TNavbar;
 }) => {
+  const { data: sessionData } = useSession();
   return (
     <>
       <HamburgerMenu linkList={linkList} />
@@ -32,6 +33,15 @@ const Navbar: React.FC<{ linkList: TNavbar }> = ({
                     </Link>
                   </li>
                 ))}
+
+                {sessionData && (
+                  <button
+                    className="block w-full text-white hover:bg-violet-600"
+                    onClick={() => signOut()}
+                  >
+                    Log Out
+                  </button>
+                )}
               </ul>
             </div>
           </div>
