@@ -32,6 +32,7 @@ export const deskRouter = createTRPCRouter({
     const result = await ctx.prisma.desk.findMany({
       where: { corporation_id },
       select: { id: true, table_name: true, is_occupied: true },
+      orderBy: { id: "asc" },
     });
     return {
       status: 201,

@@ -30,7 +30,7 @@ const AddMenu: React.FC = () => {
   });
 
   const fetchMenu = api.menu.get.useQuery();
-  const menus = fetchMenu.data?.result;
+  const menus = fetchMenu.data;
 
   const {
     register,
@@ -46,8 +46,13 @@ const AddMenu: React.FC = () => {
       setErrorMessage("price should be a positive number");
       return;
     }
+    if (!file) data.upload_file = false;
     const presigned = await mutation.mutateAsync(data);
-    if (!file || !presigned) return;
+    if (!file || !presigned) {
+      setIsLoading(false);
+      fetchMenu.refetch();
+      return;
+    }
     const result = await uploadImage(file, presigned);
     if (!result) setErrorMessage("unable to upload image");
     setIsLoading(false);
@@ -136,7 +141,7 @@ const AddMenu: React.FC = () => {
                   }
                   //when cancel button is clicked, the file input will not trigger onChange event
                   //so we need to set the value to false
-                  onClick={(e) => {
+                  onClick={() => {
                     reset();
                   }}
                   type="file"
@@ -224,18 +229,17 @@ const MenuTable = ({
                 >
                   {menu.available ? "✔" : "✖"}
                 </td>
-                <td className="px-1 text-center">
-                  {menu.url ? (
+                <td className="flex py-4 text-center">
+                  {menu.url && (
                     <Image
                       src={menu.url}
                       alt="menu image"
-                      height={50}
-                      width={100}
-                      className="h-12 w-24"
+                      height={300}
+                      width={300}
+                      className="h-32 w-40 p-4"
                     />
-                  ) : (
-                    <AddImage id={menu.id} />
                   )}
+                  <AddImage id={menu.id} />
                 </td>
               </tr>
             );
@@ -258,7 +262,6 @@ const MenuTable = ({
 const AddImage = ({ id }: { id: number }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [file, setFile] = useState<File | undefined>(undefined);
-  const [preview, setPreview] = useState<any>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const { handleSubmit } = useForm<UploadImageInput>();
   function validateFile(file: File) {
@@ -269,7 +272,7 @@ const AddImage = ({ id }: { id: number }) => {
   function reset() {
     setErrorMessage(undefined);
     setFile(undefined);
-    setPreview(undefined);
+    setIsLoading(false);
   }
 
   const mutation = api.menu.uploadImage.useMutation({
@@ -283,8 +286,12 @@ const AddImage = ({ id }: { id: number }) => {
   const onSubmit: SubmitHandler<UploadImageInput> = async () => {
     setIsLoading(true);
     setErrorMessage(undefined);
+    if (!file) {
+      setErrorMessage("no file selected");
+      setIsLoading(false);
+      return;
+    }
     const presigned = await mutation.mutateAsync({ id });
-    if (!file || !presigned) return;
     const result = await uploadImage(file, presigned);
     if (!result) setErrorMessage("unable to upload image");
     setIsLoading(false);
@@ -309,46 +316,47 @@ const AddImage = ({ id }: { id: number }) => {
     setErrorMessage(undefined);
 
     setFile(file);
-    setPreview(URL.createObjectURL(file));
-    return () => URL.revokeObjectURL(file.name);
   };
   return (
-    <div className="py-3">
+    <div className="flex flex-col justify-center">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="block py-1">
+        <div>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           <label htmlFor={`file-upload-id${id}`}>
             <input
               id={`file-upload-id${id}`}
-              accept="image/*"
+              accept="image/jpeg, image/png"
+              className="
+              text-grey-500 text-sm
+            file:mr-5 file:rounded-full file:border-0
+            file:bg-blue-50 file:py-2
+            file:px-6 file:text-sm
+            file:font-medium file:text-blue-700
+            hover:file:cursor-pointer hover:file:bg-amber-50
+            hover:file:text-amber-700
+              "
               onChange={(e: React.FormEvent<HTMLInputElement>) =>
                 onFileChange(e)
               }
               onClick={(e) => {
+                e.currentTarget.value = "";
                 reset();
               }}
               type="file"
             />
           </label>
-        </div>
-        <div className="py-1 text-start">
-          {mutation.isLoading || isLoading ? (
-            <LoadingButton />
-          ) : (
-            <input type="submit" className="rounded border py-1 px-4" />
-          )}
+          <div className="pt-2 text-start">
+            {mutation.isLoading || isLoading ? (
+              <LoadingButton />
+            ) : (
+              <input
+                type="submit"
+                className="mr-5 rounded-full border py-2 px-6 text-sm hover:cursor-pointer hover:bg-slate-100 active:bg-slate-200"
+              />
+            )}
+          </div>
         </div>
       </form>
-      {preview && (
-        <Image
-          src={preview}
-          alt="preview image"
-          width={100}
-          height={100}
-          id="preview"
-          className="h-32 w-40"
-        />
-      )}
     </div>
   );
 };

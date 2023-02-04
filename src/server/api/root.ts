@@ -5,6 +5,7 @@ import { deskRouter } from "./routers/desk";
 import { exampleRouter } from "./routers/example";
 import { menuRouter } from "./routers/menu";
 import { schedulerRouter } from "./routers/scheduler";
+import { serviceRouter } from "./routers/service";
 import { userRouter } from "./routers/user";
 import { createTRPCRouter } from "./trpc";
 
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   desk: deskRouter,
   channel: channelRouter,
   scheduler: schedulerRouter,
+  service: serviceRouter,
 });
 
 // export type definition of API

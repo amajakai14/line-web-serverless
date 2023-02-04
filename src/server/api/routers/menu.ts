@@ -1,11 +1,12 @@
 import { TRPCError } from "@trpc/server";
+import { env } from "../../../env/server.mjs";
 import {
   createMenuSchema,
   menuListSchema,
   uploadImageSchema,
 } from "../../../schema/menu.schema";
 import { isValidPrice } from "../../../utils/input-validation";
-import { getObjectContent, putObjectPresignedUrl } from "../../s3";
+import { putObjectPresignedUrl } from "../../s3";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const menuRouter = createTRPCRouter({
@@ -56,6 +57,7 @@ export const menuRouter = createTRPCRouter({
     const { corporation_id } = ctx.session.user;
     const menus = await ctx.prisma.menu.findMany({
       where: { corporation_id },
+      orderBy: { id: "asc" },
     });
     if (menus == null) {
       throw new TRPCError({
@@ -63,21 +65,15 @@ export const menuRouter = createTRPCRouter({
         message: "unable to get any of menulist",
       });
     }
-    const x = menus.map(async (menu) => {
+    const transform = menus.map((menu) => {
       if (!menu.hasImage) return menu;
-      const url = await getObjectContent(corporation_id, menu.id);
+      const url = env.CLOUDFRONT_URL + corporation_id + "/" + menu.id;
       return {
         ...menu,
         url,
       };
     });
-    //resolve x's promise
-    const transform = await Promise.all(x);
 
-    const final = transform.map((menu) => menuListSchema.parse(menu));
-    return {
-      status: 200,
-      result: final,
-    };
+    return transform.map((menu) => menuListSchema.parse(menu));
   }),
 });
