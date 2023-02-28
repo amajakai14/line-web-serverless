@@ -1,16 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
     provider = "postgresql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
 }
 
@@ -20,7 +13,6 @@ model Example {
     updatedAt DateTime @updatedAt
 }
 
-// Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -50,26 +42,27 @@ model Session {
 model Corporation {
     id           String         @id @default(cuid())
     name         String?
-    users        User[]
-    tables       Desk[]
-    menus        Menu[]
     courses      Course[]
     CourseOnMenu CourseOnMenu[]
+    tables       Desk[]
+    menus        Menu[]
+    users        User[]
 }
 
 model User {
-    id             String      @id @default(cuid())
+    id             String       @id @default(cuid())
     name           String?
-    email          String?     @unique
+    email          String?      @unique
     password       String?
     emailVerified  DateTime?
     image          String?
     role           String?
+    created_at     DateTime     @default(now())
+    corporation_id String?
     accounts       Account[]
+    carts          Cart[]
     sessions       Session[]
-    created_at     DateTime    @default(now())
-    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
-    corporation_id String
+    corporation    Corporation? @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -81,12 +74,12 @@ model VerificationToken {
 }
 
 model Desk {
-    id          Int     @id @default(autoincrement())
-    table_name  String
-    is_occupied Boolean
-
-    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    id             Int         @id @default(autoincrement())
+    table_name     String
+    is_occupied    Boolean
     corporation_id String
+    Channel        Channel[]
+    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
 }
 
 model Menu {
@@ -98,18 +91,19 @@ model Menu {
     hasImage       Boolean        @default(false)
     created_at     DateTime       @default(now())
     updated_at     DateTime?
-    corporation    Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     corporation_id String
+    carts          Cart[]
     course_on_menu CourseOnMenu[]
+    corporation    Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
 }
 
 model CourseOnMenu {
-    course         Course      @relation(fields: [course_id], references: [id], onDelete: Cascade)
     course_id      Int
-    menu           Menu        @relation(fields: [menu_id], references: [id], onDelete: Cascade)
     menu_id        Int
-    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     corporation_id String
+    corporation    Corporation @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
+    course         Course      @relation(fields: [course_id], references: [id], onDelete: Cascade)
+    menu           Menu        @relation(fields: [menu_id], references: [id], onDelete: Cascade)
 
     @@id([course_id, menu_id])
 }
@@ -122,31 +116,44 @@ model Course {
     course_priority  Int?
     created_at       DateTime       @default(now())
     updated_at       DateTime?
-    corporation      Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     corporation_id   String
+    Channel          Channel[]
+    corporation      Corporation    @relation(fields: [corporation_id], references: [id], onDelete: Cascade)
     course_on_menu   CourseOnMenu[]
 }
 
-//ONLINE EXPIRED
 model Channel {
-    id          String   @id @unique
-    table_id    Int
-    user_id     Int
-    course_name String
-    status      String
-    time_start  DateTime @default(now())
-    time_end    DateTime
-    orders      Order[]
+    id         String   @id @unique
+    table_id   Int
+    status     String
+    time_start DateTime @default(now())
+    time_end   DateTime
+    course_id  Int
+    carts      Cart[]
+    Course     Course   @relation(fields: [course_id], references: [id], onDelete: Cascade)
+    Desk       Desk     @relation(fields: [table_id], references: [id], onDelete: Cascade)
+    orders     Order[]
 }
 
 model Order {
     id           Int       @id @default(autoincrement())
-    menu_id      String
     order_amount Int
     total_price  Int
     process_type String
     created_at   DateTime  @default(now())
     updated_at   DateTime?
-    channels     Channel   @relation(fields: [channel_id], references: [id], onDelete: Cascade)
     channel_id   String
+    menu_id      Int
+    channels     Channel   @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+    id         Int     @id @default(autoincrement())
+    channel_id String
+    user_id    String
+    menu_id    Int
+    amount     Int
+    channels   Channel @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+    menus      Menu    @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+    users      User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
