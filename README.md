@@ -26,7 +26,7 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 - S3 for Image Storage
 - Supabase for Database 
 - (Considering) Upstash for caching
-- (TODO) Line Loging for interactive user experience
+
 
 ## Plan on this Project
 ### Store Management and CRM
