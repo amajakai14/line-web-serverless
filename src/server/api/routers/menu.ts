@@ -1,19 +1,19 @@
 import { TRPCError } from "@trpc/server";
 import { env } from "../../../env/server.mjs";
-import {
-  createMenuSchema,
-  menuListSchema,
-  uploadImageSchema,
-} from "../../../schema/menu.schema";
+import { menuListSchema, uploadImageSchema } from "../../../schema/menu.schema";
 import { isValidPrice } from "../../../utils/input-validation";
-import { putObjectPresignedUrl } from "../../s3";
+import {
+  addMenu,
+  createMenuSchema,
+  uploadMenuImage,
+} from "../service/menu.service.js";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const menuRouter = createTRPCRouter({
-  register: protectedProcedure
+  create: protectedProcedure
     .input(createMenuSchema)
     .mutation(async ({ ctx, input }) => {
-      const { menu_name, menu_type, price, upload_file } = input;
+      const { price } = input;
       const { corporation_id } = ctx.session.user;
       if (!isValidPrice(price)) {
         throw new TRPCError({
@@ -21,24 +21,10 @@ export const menuRouter = createTRPCRouter({
           message: "price should be a number",
         });
       }
-      const result = await ctx.prisma.menu.create({
-        data: {
-          menu_name,
-          menu_type,
-          price,
-          corporation: { connect: { id: corporation_id } },
-          hasImage: upload_file,
-        },
-      });
-      if (result == null) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "unable to create menu",
-        });
-      }
-      if (!input.upload_file) return;
+      const menu = await addMenu(ctx.prisma, input, corporation_id);
+      if (!input.hasImage) return;
 
-      return await putObjectPresignedUrl(corporation_id, result.id);
+      return await uploadMenuImage(corporation_id, menu.id);
     }),
 
   uploadImage: protectedProcedure
@@ -50,7 +36,7 @@ export const menuRouter = createTRPCRouter({
         where: { id },
         data: { hasImage: true },
       });
-      return await putObjectPresignedUrl(corporation_id, id);
+      return await uploadMenuImage(corporation_id, id);
     }),
 
   get: protectedProcedure.query(async ({ ctx }) => {

@@ -21,7 +21,7 @@ const AddMenu: React.FC = () => {
   const [preview, setPreview] = useState<any>(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
-  const mutation = api.menu.register.useMutation({
+  const mutation = api.menu.create.useMutation({
     onError: (e) => setErrorMessage(e.message),
     onSuccess: () => {
       setErrorMessage(undefined);
