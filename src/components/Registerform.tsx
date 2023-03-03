@@ -63,6 +63,15 @@ const RegisterForm = () => {
           <p className="text-center text-red-600">This field is required</p>
         )}
 
+        <label>Corporation</label>
+        <input
+          className="rounded border py-1 px-4"
+          type="text"
+          {...register("corporation", { required: true })}
+        />
+        {errors.password && (
+          <p className="text-center text-red-600">This field is required</p>
+        )}
         {mutation.isLoading ? (
           <LoadingButton />
         ) : (

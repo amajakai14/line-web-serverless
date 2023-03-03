@@ -6,7 +6,7 @@ import {
   addMenu,
   createMenuSchema,
   uploadMenuImage,
-} from "../service/menu.service.js";
+} from "../service/menu.service";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const menuRouter = createTRPCRouter({

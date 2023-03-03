@@ -1,4 +1,5 @@
 import z from "zod";
+import { menuType } from "../server/api/service/menu.service";
 
 export const menuListSchema = z.object({
   id: z.number(),

@@ -41,14 +41,17 @@ const AddMenuAndCourse = () => {
   const { data: sessionData, status } = useSession();
   const [displayCourse, setDisplayCourse] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     if (status == "unauthenticated") {
       router.push("/admin");
     }
   }, [router, sessionData, status]);
+
   if (status === "loading") {
     return <p className="text-2xl text-white">Loading...</p>;
   }
+
   return (
     <>
       <div className="md:flex md:justify-center md:gap-2">

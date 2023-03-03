@@ -4,12 +4,11 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import Pagination from "react-paginate";
 import { uploadImage } from "../../s3Client/upload.image";
-import type {
+import type { MenuList, UploadImageInput } from "../../schema/menu.schema";
+import {
   CreateMenuInput,
-  MenuList,
-  UploadImageInput,
-} from "../../schema/menu.schema";
-import { menuType } from "../../schema/menu.schema";
+  menuType,
+} from "../../server/api/service/menu.service";
 import { api } from "../../utils/api";
 import { isValidPrice } from "../../utils/input-validation";
 import LoadingButton from "../LoadingButton";
@@ -42,19 +41,24 @@ const AddMenu: React.FC = () => {
   const onSubmit: SubmitHandler<CreateMenuInput> = async (data) => {
     setIsLoading(true);
     setErrorMessage(undefined);
+
     if (!isValidPrice(data.price)) {
       setErrorMessage("price should be a positive number");
       return;
     }
-    if (!file) data.upload_file = false;
+
+    if (!file) data.hasImage = false;
+
     const presigned = await mutation.mutateAsync(data);
     if (!file || !presigned) {
       setIsLoading(false);
       fetchMenu.refetch();
       return;
     }
+
     const result = await uploadImage(file, presigned);
     if (!result) setErrorMessage("unable to upload image");
+
     setIsLoading(false);
     fetchMenu.refetch();
   };
@@ -65,21 +69,23 @@ const AddMenu: React.FC = () => {
       reset();
       return;
     }
+
     if (!validateFile(file)) {
       reset();
       setErrorMessage("upload file cannot be over then 5 MB.");
       return;
     }
+
     const fileExtension = file.name.split(".").pop();
     if (!fileExtension) {
       reset();
       setErrorMessage("file extension not found");
       return;
     }
-    setErrorMessage(undefined);
 
+    setErrorMessage(undefined);
     setFile(file);
-    setValue("upload_file", true);
+    setValue("hasImage", true);
     setPreview(URL.createObjectURL(file));
     return () => URL.revokeObjectURL(file.name);
   };
@@ -92,7 +98,7 @@ const AddMenu: React.FC = () => {
   function reset() {
     setErrorMessage(undefined);
     setFile(undefined);
-    setValue("upload_file", false);
+    setValue("hasImage", false);
     setPreview(undefined);
   }
 
@@ -103,13 +109,19 @@ const AddMenu: React.FC = () => {
           {errorMessage && (
             <p className="text-center text-red-600">{errorMessage}</p>
           )}
-          <label>Menu name</label>
+          <label>Menu name(ENG)</label>
           <input
             className="rounded border py-1 px-4"
             type="text"
-            {...register("menu_name", { required: true })}
+            {...register("menu_name_en", { required: true })}
           />
-          {errors.menu_name && (
+          <label>Menu name(TH)</label>
+          <input
+            className="rounded border py-1 px-4"
+            type="text"
+            {...register("menu_name_th", { required: true })}
+          />
+          {errors.menu_name_en && (
             <p className="text-center text-red-600">This field is required</p>
           )}
           <label>Type of Menu</label>

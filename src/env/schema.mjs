@@ -19,12 +19,10 @@ export const serverSchema = z.object({
     // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string() : z.string().url()
   ),
-  TZ: z.string(),
   CRON_SECRET: z.string(),
   S3_ACCESS_KEY: z.string(),
   S3_SECRET_KEY: z.string(),
   S3_BUCKET: z.string(),
-  CLOUDFRONT_URL: z.string().url(),
 });
 
 /**
@@ -32,9 +30,7 @@ export const serverSchema = z.object({
  * This way you can ensure the app isn't built with invalid env vars.
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
-export const clientSchema = z.object({
-  NEXT_PUBLIC_BASE_URL: z.string(),
-});
+export const clientSchema = z.object({});
 
 /**
  * You can't destruct `process.env` as a regular object, so you have to do
@@ -44,5 +40,4 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
-  NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
 };

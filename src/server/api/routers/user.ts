@@ -11,7 +11,18 @@ export const userRouter = createTRPCRouter({
   register: publicProcedure
     .input(createUserSchema)
     .mutation(async ({ ctx, input }) => {
-      const { email, password } = input;
+      const { email, password, corporation } = input;
+      const corporationExist = await ctx.prisma.corporation.findFirst({
+        where: { id: corporation },
+      });
+      if (!corporationExist) {
+        await ctx.prisma.corporation.create({
+          data: {
+            id: corporation,
+            name: corporation + "name",
+          },
+        });
+      }
       const exist = await ctx.prisma.user.findFirst({
         where: { email: email.toLowerCase() },
       });
@@ -28,7 +39,7 @@ export const userRouter = createTRPCRouter({
           password: hash,
           name: email.substring(0, email.indexOf("@")),
           role: "ADMIN",
-          corporation: { connect: { id: "testcorp" } },
+          corporation: { connect: { id: corporation } },
         },
       });
       return {
